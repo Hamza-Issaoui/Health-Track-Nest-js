@@ -1,10 +1,20 @@
 // create-user.dto.ts
 
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { IsString, IsEmail, MinLength, IsIn } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
-  readonly name: string;
+  readonly firstname: string;
+
+  @IsString()
+  readonly lastname: string;
+
+  @IsString()
+  readonly phone: number;
+
+  @IsString()
+  @IsIn(['admin', 'client', 'coach'])
+  readonly role: string;
 
   @IsEmail()
   readonly email: string;

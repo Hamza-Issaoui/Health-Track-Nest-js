@@ -1,9 +1,8 @@
 // auth.controller.ts
-import { Controller, Post, UseGuards, Request, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Body, NotFoundException, UnauthorizedException, HttpStatus, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
 import { VerifyEmailDto } from './dto/VerifyEmail.dto';
@@ -13,17 +12,30 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
  // @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(@Body() loginDto: LoginDto) {     
-    const { name, password } = loginDto;
-    return this.authService.login(name, password);
+ @Post('register')
+  async register(@Body() createUserDto: CreateUserDto) {
+    return this.authService.register(createUserDto);
   }
 
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    const { name, email, password } = createUserDto;
-    return this.authService.register(name, email, password);
-}
+ @Post('login')
+ async logIn(@Body() body: any, @Res() res: any): Promise<void> {
+   try {
+     const result = await this.authService.login(body.email, body.password);
+     res.status(HttpStatus.OK).json({ ...result, msg: "you are connected", success: true });
+   } catch (error) {
+     res.status(HttpStatus.NOT_ACCEPTABLE).json({ msg: error.message });
+   }
+ }
+
+ @Post('refresh-token')
+ async refreshToken(@Body() body: any, @Res() res: any): Promise<void> {
+   try {
+     const result = await this.authService.refreshToken(body.refreshToken);
+     res.status(HttpStatus.OK).json(result);
+   } catch (error) {
+     res.status(HttpStatus.NOT_ACCEPTABLE).json({ msg: error.message });
+   }
+ }
 
 @Post('forgot-password')
 async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {

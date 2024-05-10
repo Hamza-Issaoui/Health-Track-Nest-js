@@ -12,23 +12,20 @@ import { CreateUserDto } from './dto/create-user.dto';
 export class UserService {
   constructor(@InjectModel(Users.name) private userModel: Model<Users>) {}
 
-  async createUser(name: string, email: string, password: string): Promise<Users> {
+  async createUser(createUserDto: CreateUserDto): Promise<Users> {
     try {
-      const user = await this.findByEmail(email); // to verify duplicate user 
-      console.log("duplicate", user);
+      const { firstname, lastname, phone, role, email, password } = createUserDto;
 
-      if (user) {
+      const existingUser = await this.userModel.findOne({ email }).exec();
+      if (existingUser) {
         throw new ConflictException('User with this email already exists');
-      } else {
-        const newUser = new this.userModel({ name, email, password });
-        return await newUser.save();
       }
+  
+      const newUser = new this.userModel({ firstname, lastname, phone, role, email, password });
+      return await newUser.save();
     } catch (error) {
-      if (error instanceof ConflictException) {
-        throw error;
-      } else {
-        throw new Error('Failed to create user');
-      }
+      console.error('Failed to create user:', error.message);
+      throw new ConflictException('Failed to create user');
     }
   }
 
@@ -40,7 +37,7 @@ export class UserService {
       }
       return user;
     } catch (error) {
-      throw new Error('Failed to find user by username');
+      throw new Error('Failed to find user by name');
     }
   }
 
@@ -60,11 +57,12 @@ export class UserService {
     try {
       const user = await this.userModel.findOne({ email }).exec();
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('Email not found'); // Customized message
       }
       return user;
     } catch (error) {
-      throw new Error('Failed to find user by email');
+      console.error('Failed to find user by email:', error.message);
+      throw new NotFoundException('Email not found'); // Customized message
     }
   }
 
@@ -101,7 +99,28 @@ export class UserService {
     }
   }
 
-
+  async getProfile(userId: string): Promise<Users> {
+    try {
+      const user = await this.findById(userId);
+      // Ne renvoie pas le mot de passe dans le profil
+      const { password, ...profile } = user.toObject();
+      return profile;
+    } catch (error) {
+      throw new Error('Failed to get user profile');
+    }
+  }
+  
+  async updateProfile(userId: string, updateUserDto: CreateUserDto): Promise<Users> {
+    try {
+      const updatedUser = await this.userModel.findByIdAndUpdate(userId, updateUserDto, { new: true }).exec();
+      if (!updatedUser) {
+        throw new NotFoundException('User not found');
+      }
+      return updatedUser;
+    } catch (error) {
+      throw new Error('Failed to update user profile');
+    }
+  }
 
 
 

@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/user.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Users } from '../users/user.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt'
+import * as jwt from 'jsonwebtoken';
 import { MyMailerService } from './mailer/mailer.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+
+
+const RefreshTokens: { [key: string]: string } = {};
+
 
 @Injectable()
 export class AuthService {
@@ -16,9 +22,9 @@ export class AuthService {
 
   ) {}
 
-  async validateUser(name: string, password: string): Promise<Users| null> {
+  async validateUser(email: string, password: string): Promise<Users| null> {
     try {
-      const user = await this.usersService.findByUsername(name);
+      const user = await this.usersService.findByEmail(email);
       console.log("user",user);
       if (user && bcrypt.compareSync(password, user.password)) {
         return user;
@@ -29,30 +35,57 @@ export class AuthService {
     }
   }
 
-  async login(name: string, password: string): Promise<any> {
+  async register(createUserDto: CreateUserDto): Promise<any> {
     try {
-      const user = await this.validateUser(name, password);
-      console.log("user",user);
-      
-      if (!user) {
-        throw new UnauthorizedException('User not found or invalid password !');
-      }
-      const payload = { name: user.name, sub: user.id};
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
-    } catch (error) {
-      throw new UnauthorizedException('Failed to Login !');
+      const { password, ...userData } = createUserDto; 
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    await this.usersService.createUser({ ...userData, password: hashedPassword }); 
+    return {
+        status: HttpStatus.CREATED,
+        msg: "User Created Successfully!"
+           };
+       } catch (error) {
+      throw new Error('Failed to register user');
     }
   }
+  
 
-  async register(name: string, email: string, password: string): Promise<any> {
-    try {
-      const hashedPassword = bcrypt.hashSync(password, 10);
-      return this.usersService.createUser(name, email, hashedPassword);
-    } catch (error) {
-      // Handle error appropriately
-      throw new Error('Failed to register user');
+  async login(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email);
+    
+    if (!user) {
+      throw new NotFoundException('Email not found!');
+    }
+
+    const passwordCompare = bcrypt.compareSync(password, user.password);
+    if (!passwordCompare) {
+      throw new UnauthorizedException('Incorrect password!');
+    }
+
+    const token = this.jwtService.sign({ email: user.email, sub: user.id });
+    const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    return {
+      email: user.email,
+      user: user,
+      token: token,
+      expiresIn: 1,
+      refreshToken: refreshToken,
+    };
+  }
+
+  async refreshToken(refreshToken: string): Promise<any> {
+    if (refreshToken in RefreshTokens) {
+      const token = this.jwtService.sign({ user: RefreshTokens[refreshToken] }, { expiresIn: '7d' });
+      const newRefreshToken = jwt.sign({ id: RefreshTokens[refreshToken] }, process.env.JWT_SECRET, { expiresIn: '7d' });
+      RefreshTokens[newRefreshToken] = RefreshTokens[refreshToken];
+      delete RefreshTokens[refreshToken];
+      return {
+        accesstoken: token,
+        refreshToken: newRefreshToken,
+      };
+    } else {
+      throw new NotFoundException('Refresh token not found!');
     }
   }
 
@@ -109,7 +142,6 @@ export class AuthService {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private authService: AuthService,
-    private userService: UserService, // Inject UserService here
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

@@ -1,6 +1,6 @@
 // user.service.ts
 
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Notifications } from './notification.entity';
@@ -11,13 +11,17 @@ import { CreateNotificationDto } from './dto/create-notif.dto';
 export class NotificationService {
   constructor(@InjectModel(Notifications.name) private notifModel: Model<Notifications>) {}
 
-   async createNotif(name: string, description: string, ): Promise<Notifications> {
+  async createNotif(name: string, description: string): Promise<any> {
     try {
-        const newNotif = new this.notifModel({ name, description });
-        return await newNotif.save();
-
+      const newNotif = new this.notifModel({ name, description });
+      const savedNotif = await newNotif.save();
+      return {
+        status: HttpStatus.CREATED,
+        msg: "Notification Created Successfully!",
+        notification: savedNotif
+      };
     } catch (error) {
-        throw new Error('Failed to create user');
+      throw new Error('Failed to create notification');
     }
   }
 

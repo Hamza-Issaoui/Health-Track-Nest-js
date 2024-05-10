@@ -1,9 +1,10 @@
 // user.controller.ts
 
-import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { Users } from './user.entity';
+import { LocalAuthGuard } from '../Auth/local-auth.guard';
 
 @Controller('users')
 export class UserController {
@@ -11,8 +12,8 @@ export class UserController {
 
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto): Promise<Users> {
-    const { name, email, password } = createUserDto;
-    return this.userService.createUser(name, email, password);
+   // const { name, email, password } = createUserDto;
+    return this.userService.createUser(createUserDto);
   }
 
   @Get('id/:id') // Define the route parameter
@@ -47,5 +48,16 @@ export class UserController {
   @Delete('delete/:id')
   delete(@Param('id') id: string) {
     return this.userService.deleteUser(id);
+  }
+
+ // @UseGuards(LocalAuthGuard)
+  @Get(':id/profile')
+async getProfile(@Param('id') userId: string): Promise<Users> {
+  return this.userService.getProfile(userId);
+  }
+
+@Patch(':id/profile')
+async updateProfile(@Param('id') userId: string, @Body() updateUserDto: CreateUserDto): Promise<Users> {
+  return this.userService.updateProfile(userId, updateUserDto);
   }
 }
