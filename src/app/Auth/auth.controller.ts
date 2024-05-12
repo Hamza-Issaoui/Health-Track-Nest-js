@@ -1,11 +1,12 @@
 // auth.controller.ts
-import { Controller, Post, UseGuards, Request, Body, NotFoundException, UnauthorizedException, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Body, NotFoundException, UnauthorizedException, HttpStatus, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
 import { VerifyEmailDto } from './dto/VerifyEmail.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('auth')
 export class AuthController {
@@ -13,9 +14,10 @@ export class AuthController {
 
  // @UseGuards(LocalAuthGuard)
  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto);
-  }
+ @UseInterceptors(FileInterceptor('file')) // 'file' is the name of the field in the form-data
+ async register(@Body() createUserDto: CreateUserDto, @UploadedFile() file) {
+   return this.authService.register(createUserDto, file);
+ }
 
  @Post('login')
  async logIn(@Body() body: any, @Res() res: any): Promise<void> {

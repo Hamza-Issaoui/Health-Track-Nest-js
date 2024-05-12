@@ -11,11 +11,9 @@ export class MealsController {
   constructor(private readonly mealService: MealService) {}
 
   @Post()
-  async createMeal(@Body() createmealDto: CreateMealDto): Promise<Meals> {
-    const { name, description } = createmealDto;
-    return this.mealService.create(name, description);
+  async createMeal(@Body() createMealDto: CreateMealDto): Promise<Meals> {
+    return this.mealService.create(createMealDto);
   }
-
    @Get('id/:id') // Define the route parameter
   async findMealById(@Param('id') id: string): Promise<Meals> {
     return this.mealService.findById(id);

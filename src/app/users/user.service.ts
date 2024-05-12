@@ -1,27 +1,36 @@
 // user.service.ts
-
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users } from './user.entity';
+import { InjectModel } from '@nestjs/mongoose'; 
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UploadFileService } from '../upload-file/upload-file.service';
 
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(Users.name) private userModel: Model<Users>) {}
+  constructor(@InjectModel('Users')
+   private readonly userModel: Model<Users>,
+   private readonly fileUploadService: UploadFileService
+) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<Users> {
+  async createUser(createUserDto: CreateUserDto, file): Promise<Users> {
     try {
       const { firstname, lastname, phone, role, email, password } = createUserDto;
+      let profilePicture = null;
+
+      if (file) {
+        // Upload the file and get the file path
+        profilePicture = this.fileUploadService.uploadFile(file);
+      }
 
       const existingUser = await this.userModel.findOne({ email }).exec();
       if (existingUser) {
         throw new ConflictException('User with this email already exists');
       }
-  
-      const newUser = new this.userModel({ firstname, lastname, phone, role, email, password });
+
+      const newUser = new this.userModel({ firstname, lastname, phone, role, email, password, profilePicture });
       return await newUser.save();
     } catch (error) {
       console.error('Failed to create user:', error.message);

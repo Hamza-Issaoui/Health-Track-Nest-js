@@ -1,20 +1,41 @@
 // user.controller.ts
 
-import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { Users } from './user.entity';
-import { LocalAuthGuard } from '../Auth/local-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<Users> {
-   // const { name, email, password } = createUserDto;
-    return this.userService.createUser(createUserDto);
+  @UseInterceptors(FileInterceptor('profilePicture', {
+    storage: diskStorage({
+      destination: './uploads',
+      filename: (req, file, cb) => {
+        const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+        return cb(null, `${randomName}${Date.now()}${file.originalname}`);
+      },
+    }),
+  }))
+  async createUser(@Body() createUserDto: CreateUserDto, @UploadedFile() file): Promise<Users> {
+    return this.userService.createUser(createUserDto, file);
   }
+
 
   @Get('id/:id') // Define the route parameter
   async findUserById(@Param('id') id: string): Promise<Users> {

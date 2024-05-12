@@ -4,7 +4,7 @@ import { UserService } from '../users/user.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Users } from '../users/user.entity';
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { MyMailerService } from './mailer/mailer.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -35,11 +35,11 @@ export class AuthService {
     }
   }
 
-  async register(createUserDto: CreateUserDto): Promise<any> {
+  async register(createUserDto: CreateUserDto, file): Promise<any> {
     try {
       const { password, ...userData } = createUserDto; 
     const hashedPassword = bcrypt.hashSync(password, 10);
-    await this.usersService.createUser({ ...userData, password: hashedPassword }); 
+    await this.usersService.createUser({ ...userData, password: hashedPassword },file); 
     return {
         status: HttpStatus.CREATED,
         msg: "User Created Successfully!"

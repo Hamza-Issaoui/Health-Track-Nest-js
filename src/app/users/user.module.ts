@@ -10,7 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from '../Auth/auth.controller';
 import { MyMailerService } from '../Auth/mailer/mailer.service';
-//import { MyMailerModule } from '../Auth/mailer/mailer.module';
+import { UploadFileService } from '../upload-file/upload-file.service';
 
 @Module({
   imports: [
@@ -18,12 +18,11 @@ import { MyMailerService } from '../Auth/mailer/mailer.service';
     MongooseModule.forFeature([{ name: 'Users', schema: UserSchema }]),
     PassportModule,
     JwtModule.register({
-      secret: 'your_secret_key', // Provide your secret key here
-      signOptions: { expiresIn: '1d' }, // Set token expiration
+      secret: 'your_secret_key', 
+      signOptions: { expiresIn: '1d' }, 
        }),
-    //MyMailerModule,
   ],
   controllers: [UserController, AuthController],
-  providers: [UserService, AuthService, LocalStrategy, MyMailerService],
+  providers: [UserService, AuthService, LocalStrategy, MyMailerService, UploadFileService],
 })
 export class UserModule {}

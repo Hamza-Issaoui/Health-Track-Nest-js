@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { OneToMany } from 'typeorm';
-import { Nutrients } from '../nutrient/nutrient.entity';
+import { NutrientSchema, Nutrients } from '../nutrient/nutrient.entity';
 
-@Schema()
+
+@Schema({ timestamps: true })
 export class Meals extends Document {
   @Prop({ required: true })
   name: string;
@@ -11,8 +11,8 @@ export class Meals extends Document {
   @Prop({ required: true })
   description: string;
 
-  @OneToMany(() => Nutrients, (nutritients) => nutritients)
-  nutritients : Nutrients[];
+  @Prop({ type: [NutrientSchema] }) 
+  nutrients: Nutrients[]; 
 }
 
 export const MealSchema = SchemaFactory.createForClass(Meals);

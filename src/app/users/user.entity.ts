@@ -2,8 +2,9 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { NotificationSchema, Notifications } from '../notifications/notification.entity';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Users extends Document {
   @Prop({ required: true })
   firstname: string;
@@ -22,6 +23,12 @@ export class Users extends Document {
 
   @Prop({ required: true })
   password: string;
+
+  @Prop() 
+  profilePicture: string; 
+
+  @Prop({ type: [NotificationSchema] }) 
+  notifications: Notifications[]; 
 }
 
 export const UserSchema = SchemaFactory.createForClass(Users);

@@ -11,13 +11,13 @@ import { CreateMealDto } from './dto/create-meal.dto';
 export class MealService {
   constructor(@InjectModel(Meals.name) private mealModel: Model<Meals>) {}
 
-   async create(name: string, description: string, ): Promise<Meals> {
+  async create(createMealDto: CreateMealDto): Promise<Meals> {
     try {
-        const newMeal = new this.mealModel({ name, description });
-        return await newMeal.save();
-
+      const { ...mealData } = createMealDto;
+      const newMeal = new this.mealModel(mealData);
+      return await newMeal.save();
     } catch (error) {
-        throw new Error('Failed to create meal');
+      throw new Error('Failed to create meal');
     }
   }
 

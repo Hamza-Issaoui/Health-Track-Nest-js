@@ -8,10 +8,11 @@ import { GoalModule } from './app/goals/goals.module';
 import { NutrientModule } from './app/nutrient/nutrient.module';
 import { ActivityModule } from './app/activity/activity.module';
 import { MedicalModule } from './app/suivi-medical/medical.module';
+import { UploadFileService } from './app/upload-file/upload-file.service';
 
 @Module({
   imports: [UserModule, NotificationModule, GoalModule, MealModule, NutrientModule, ActivityModule, MedicalModule,],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UploadFileService],
 })
 export class AppModule {}
