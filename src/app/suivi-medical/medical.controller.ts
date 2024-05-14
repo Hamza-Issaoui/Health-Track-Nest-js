@@ -16,22 +16,22 @@ export class MedicalController {
     return this.medicalervice.create(name, description);
   }
 
-   @Get('id/:id') // Define the route parameter
+   @Get(':id') // Define the route parameter
   async findMedicalById(@Param('id') id: string): Promise<Medical> {
     return this.medicalervice.findById(id);
   }
   
-  @Get('name/:name') 
+  @Get(':name') 
   async findMedicalByName(@Param('name') name: string): Promise<Medical> {
     return this.medicalervice.findByname(name);
   }
 
-  @Get('getAll')
+  @Get()
   async findAllGoals(): Promise<{ message: string, medical: Medical[] }> {
     return await this.medicalervice.findAll();
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   async updateGoal(
     @Param('id') id: string,
     @Body() updateMedicalDto: CreateMedicalDto,
@@ -40,7 +40,7 @@ export class MedicalController {
   }
 
 
-  @Delete('delete/:id')
+  @Delete(':id')
   deleteMedical(@Param('id') id: string) {
     return this.medicalervice.delete(id);
   } 

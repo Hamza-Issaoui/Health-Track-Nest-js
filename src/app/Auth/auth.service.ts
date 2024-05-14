@@ -6,8 +6,10 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Users } from '../users/user.entity';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { MyMailerService } from './mailer/mailer.service';
+import { MyMailerService } from '../shared/mailer/mailer.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 
 
 const RefreshTokens: { [key: string]: string } = {};
@@ -17,9 +19,9 @@ const RefreshTokens: { [key: string]: string } = {};
 export class AuthService {
   constructor(
     private usersService: UserService,
+    @InjectModel('Users') private readonly userModel: Model<Users>,
     private jwtService: JwtService,
     private mailerService: MyMailerService, 
-
   ) {}
 
   async validateUser(email: string, password: string): Promise<Users| null> {
@@ -90,7 +92,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.userModel.findOne({ email });
     if (!user) {
         throw new NotFoundException('User not found');
     }

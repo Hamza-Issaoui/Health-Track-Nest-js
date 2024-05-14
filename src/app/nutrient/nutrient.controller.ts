@@ -16,24 +16,24 @@ export class NutrientssController {
     return this.nutrientService.create(name, description);
   }
 
-   @Get('id/:id') // Define the route parameter
+   @Get(':id') // Define the route parameter
   async findNutrientById(@Param('id') id: string): Promise<Nutrients> {
     return this.nutrientService.findById(id);
   }
   
-  @Get('name/:name') 
+  @Get(':name') 
   async findNutrientByName(@Param('name') name: string): Promise<Nutrients> {
     return this.nutrientService.findByname(name);
   }
 
   
 
-  @Get('getAll')
+  @Get()
   async findAllNutrients(): Promise<{ message: string, nutrients: Nutrients[] }> {
     return await this.nutrientService.findAll();
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   async updateNutrient(
     @Param('id') id: string,
     @Body() updatenutrientDto: CreateNutrientDto,
@@ -42,7 +42,7 @@ export class NutrientssController {
   }
 
 
-  @Delete('delete/:id')
+  @Delete(':id')
   deleteNutrient(@Param('id') id: string) {
     return this.nutrientService.delete(id);
   } 

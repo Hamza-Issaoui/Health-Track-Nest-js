@@ -17,25 +17,22 @@ export class ActivitiesController {
     return this.activityService.create(name, description);
   }
 
-   @Get('id/:id') // Define the route parameter
+   @Get(':id') // Define the route parameter
   async findActivityById(@Param('id') id: string): Promise<Activities> {
     return this.activityService.findById(id);
   }
   
-  @Get('name/:name') 
+  @Get(':name') 
   async findActivityByName(@Param('name') name: string): Promise<Activities> {
     return this.activityService.findByname(name);
   }
 
-  
-
-  @Get('getAll')
-
+  @Get()
   async findAllActivities(): Promise<{ message: string, activity: Activities[] }> {
     return await this.activityService.findAll();
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   async updateActivity(
     @Param('id') id: string,
     @Body() updatenutrientDto: CreateActivityDto,
@@ -44,7 +41,7 @@ export class ActivitiesController {
   }
 
 
-  @Delete('delete/:id')
+  @Delete(':id')
   deleteActivity(@Param('id') id: string) {
     return this.activityService.delete(id);
   } 

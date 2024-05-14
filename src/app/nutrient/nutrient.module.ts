@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DatabaseModule } from '../database/databse.module';
+import { DatabaseModule } from '../shared/database/databse.module';
 import { NutrientSchema } from './nutrient.entity';
 import { NutrientssController } from './nutrient.controller';
 import { NutrientService } from './nutrient.service';

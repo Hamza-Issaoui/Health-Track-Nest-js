@@ -15,24 +15,24 @@ export class GoalsController {
     return this.goalService.create(name, description);
   }
 
-   @Get('id/:id') // Define the route parameter
+   @Get(':id') // Define the route parameter
   async findGoalById(@Param('id') id: string): Promise<Goals> {
     return this.goalService.findById(id);
   }
   
-  @Get('name/:name') 
+  @Get(':name') 
   async findGoalByName(@Param('name') name: string): Promise<Goals> {
     return this.goalService.findByname(name);
   }
 
   
 
-  @Get('getAll')
+  @Get()
   async findAllGoals(): Promise<{ message: string, goals: Goals[] }> {
     return await this.goalService.findAll();
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   async updateGoal(
     @Param('id') id: string,
     @Body() updateGoalDto: CreateGoalDto,
@@ -41,7 +41,7 @@ export class GoalsController {
   }
 
 
-  @Delete('delete/:id')
+  @Delete(':id')
   deleteGoal(@Param('id') id: string) {
     return this.goalService.delete(id);
   } 

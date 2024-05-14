@@ -10,12 +10,16 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
+
+import { diskStorage } from 'multer';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { Users } from './user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { LocalAuthGuard } from '../Auth/local-auth.guard';
 
 
 @Controller('users')
@@ -37,27 +41,29 @@ export class UserController {
   }
 
 
-  @Get('id/:id') // Define the route parameter
+  @Get(':id') // Define the route parameter
   async findUserById(@Param('id') id: string): Promise<Users> {
     return this.userService.findById(id);
   }
   
-  @Get('name/:name') 
+  @Get(':name') 
   async findUserByName(@Param('name') name: string): Promise<Users> {
     return this.userService.findByUsername(name);
   }
 
-  @Get('email/:email') 
+  @Get(':email') 
   async findUserByEmail(@Param('email') email: string): Promise<Users> {
     return this.userService.findByEmail(email);
   }
 
-  @Get('getAll')
+
+  @UseGuards(LocalAuthGuard)
+  @Get()
   async findAllUsers(): Promise<{ message: string, users: Users[] }> {
     return await this.userService.findAllUsers();
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: CreateUserDto,
@@ -66,12 +72,12 @@ export class UserController {
   }
 
 
-  @Delete('delete/:id')
+  @Delete(':id')
   delete(@Param('id') id: string) {
     return this.userService.deleteUser(id);
   }
 
- // @UseGuards(LocalAuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Get(':id/profile')
 async getProfile(@Param('id') userId: string): Promise<Users> {
   return this.userService.getProfile(userId);

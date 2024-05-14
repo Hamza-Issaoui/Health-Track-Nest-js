@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DatabaseModule } from '../database/databse.module';
+import { DatabaseModule } from '../shared/database/databse.module';
 import { MealsController } from './meal.controller';
 import { MealService } from './meal.service';
 import { MealSchema } from './meal.entity';

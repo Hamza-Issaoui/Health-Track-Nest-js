@@ -1,16 +1,18 @@
 // user.service.ts
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+
 import { Model } from 'mongoose';
-import { Users } from './user.entity';
-import { InjectModel } from '@nestjs/mongoose'; 
 import * as bcrypt from 'bcrypt';
+
+import { Users } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UploadFileService } from '../upload-file/upload-file.service';
+import { UploadFileService } from '../shared/upload-file/upload-file.service';
 
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('Users')
+  constructor( @InjectModel('Users')
    private readonly userModel: Model<Users>,
    private readonly fileUploadService: UploadFileService
 ) {}

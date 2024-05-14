@@ -15,24 +15,22 @@ export class NotificationController {
     return this.notificationService.createNotif(name, description);
   }
 
-   @Get('id/:id') // Define the route parameter
+   @Get(':id') // Define the route parameter
   async findNotifById(@Param('id') id: string): Promise<Notifications> {
     return this.notificationService.findById(id);
   }
   
-  @Get('name/:name') 
+  @Get(':name') 
   async findUserByName(@Param('name') name: string): Promise<Notifications> {
     return this.notificationService.findByNotifname(name);
   }
 
-  
-
-  @Get('getAll')
+  @Get()
   async findAllNotifications(): Promise<{ message: string, notifs: Notifications[] }> {
     return await this.notificationService.findAllNotifs();
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   async updateNotif(
     @Param('id') id: string,
     @Body() updateNotifDto: CreateNotificationDto,
@@ -41,7 +39,7 @@ export class NotificationController {
   }
 
 
-  @Delete('delete/:id')
+  @Delete(':id')
   delete(@Param('id') id: string) {
     return this.notificationService.deleteNotif(id);
   } 

@@ -8,7 +8,7 @@ import { GoalModule } from './app/goals/goals.module';
 import { NutrientModule } from './app/nutrient/nutrient.module';
 import { ActivityModule } from './app/activity/activity.module';
 import { MedicalModule } from './app/suivi-medical/medical.module';
-import { UploadFileService } from './app/upload-file/upload-file.service';
+import { UploadFileService } from './app/shared/upload-file/upload-file.service';
 
 @Module({
   imports: [UserModule, NotificationModule, GoalModule, MealModule, NutrientModule, ActivityModule, MedicalModule,],

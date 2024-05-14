@@ -14,23 +14,23 @@ export class MealsController {
   async createMeal(@Body() createMealDto: CreateMealDto): Promise<Meals> {
     return this.mealService.create(createMealDto);
   }
-   @Get('id/:id') // Define the route parameter
+   @Get(':id') // Define the route parameter
   async findMealById(@Param('id') id: string): Promise<Meals> {
     return this.mealService.findById(id);
   }
   
-  @Get('name/:name') 
+  @Get(':name') 
   async findMealByName(@Param('name') name: string): Promise<Meals> {
     return this.mealService.findByname(name);
   }
 
 
-  @Get('getAll')
+  @Get()
   async findAllMeals(): Promise<{ message: string, meals: Meals[] }> {
     return await this.mealService.findAll();
   }
 
-  @Patch('update/:id')
+  @Patch(':id')
   async updateMeal(
     @Param('id') id: string,
     @Body() updateMealDto: CreateMealDto,
@@ -39,7 +39,7 @@ export class MealsController {
   }
 
 
-  @Delete('delete/:id')
+  @Delete(':id')
   deleteMeal(@Param('id') id: string) {
     return this.mealService.delete(id);
   } 
