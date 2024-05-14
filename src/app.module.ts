@@ -9,9 +9,10 @@ import { NutrientModule } from './app/nutrient/nutrient.module';
 import { ActivityModule } from './app/activity/activity.module';
 import { MedicalModule } from './app/suivi-medical/medical.module';
 import { UploadFileService } from './app/shared/upload-file/upload-file.service';
+import { AuthModule } from './app/Auth/auth.module';
 
 @Module({
-  imports: [UserModule, NotificationModule, GoalModule, MealModule, NutrientModule, ActivityModule, MedicalModule,],
+  imports: [UserModule, NotificationModule, GoalModule, MealModule, NutrientModule, ActivityModule, MedicalModule,AuthModule],
   controllers: [AppController],
   providers: [AppService, UploadFileService],
 })

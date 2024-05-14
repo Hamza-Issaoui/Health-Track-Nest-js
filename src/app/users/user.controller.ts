@@ -20,6 +20,7 @@ import { UserService } from './user.service';
 import { Users } from './user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LocalAuthGuard } from '../Auth/local-auth.guard';
+import JwtAuthGuard from '../Auth/jwt-auth.guard';
 
 
 @Controller('users')
@@ -57,7 +58,7 @@ export class UserController {
   }
 
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAllUsers(): Promise<{ message: string, users: Users[] }> {
     return await this.userService.findAllUsers();

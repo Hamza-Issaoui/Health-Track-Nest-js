@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../users/user.service';
 import { PassportStrategy } from '@nestjs/passport';
@@ -24,16 +24,26 @@ export class AuthService {
     private mailerService: MyMailerService, 
   ) {}
 
-  async validateUser(email: string, password: string): Promise<Users| null> {
+  public async getAuthenticatedUser(email: string, hashedPassword: string) {
     try {
       const user = await this.usersService.findByEmail(email);
-      console.log("user",user);
-      if (user && bcrypt.compareSync(password, user.password)) {
-        return user;
-      }
-      return null;
+      await this.verifyPassword(hashedPassword, user.password);
+      user.password = undefined;
+      return user;
     } catch (error) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new HttpException(
+        'Wrong credentials provided',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  private async verifyPassword(plainTextPassword: string, hashedPassword: string) {
+    const isPasswordMatching = await bcrypt.compare(
+      plainTextPassword,
+      hashedPassword
+    );
+    if (!isPasswordMatching) {
+      throw new HttpException('Wrong credentials provided', HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -153,7 +163,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     try {
-      const user = await this.authService.validateUser(payload.name, '');
+      const user = await this.authService.getAuthenticatedUser(payload.name, '');
       if (!user) {
         throw new UnauthorizedException('Invalid token');
       }

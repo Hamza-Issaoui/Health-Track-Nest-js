@@ -25,5 +25,6 @@ import { UploadFileService } from '../shared/upload-file/upload-file.service';
   ],
   controllers: [UserController, AuthController],
   providers: [UserService, AuthService, LocalStrategy, MyMailerService, UploadFileService],
+  exports: [UserService],
 })
 export class UserModule {}
