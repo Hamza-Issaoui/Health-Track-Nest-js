@@ -11,8 +11,16 @@ import { MedicalModule } from './app/suivi-medical/medical.module';
 import { UploadFileService } from './app/shared/upload-file/upload-file.service';
 
 @Module({
-  imports: [UserModule, NotificationModule, GoalModule, MealModule, NutrientModule, ActivityModule, MedicalModule,],
+  imports: [
+    UserModule,
+    NotificationModule,
+    GoalModule,
+    MealModule,
+    NutrientModule,
+    ActivityModule,
+    MedicalModule,
+  ],
   controllers: [AppController],
   providers: [AppService, UploadFileService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -4,6 +4,7 @@ import { DatabaseModule } from '../shared/database/databse.module';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from './notification.service';
 import { NotificationSchema } from './notification.entity';
+import { WebSocket } from '../shared/webSocket/webSocketGateway';
 
 
 
@@ -13,6 +14,6 @@ import { NotificationSchema } from './notification.entity';
     MongooseModule.forFeature([{ name: 'Notifications', schema: NotificationSchema}]),
   ],
   controllers: [NotificationController],
-  providers: [NotificationService],
+  providers: [NotificationService, WebSocket],
 })
 export class NotificationModule {}

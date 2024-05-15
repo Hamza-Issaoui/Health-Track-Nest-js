@@ -5,16 +5,24 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Notifications } from './notification.entity';
 import { CreateNotificationDto } from './dto/create-notif.dto';
+import { WebSocket } from '../shared/webSocket/webSocketGateway';
 
 
 @Injectable()
 export class NotificationService {
-  constructor(@InjectModel(Notifications.name) private notifModel: Model<Notifications>) {}
+  constructor(@InjectModel(Notifications.name) 
+  private notifModel: Model<Notifications>,
+  private readonly webSocket: WebSocket,
+) {}
 
   async createNotif(name: string, description: string): Promise<any> {
     try {
       const newNotif = new this.notifModel({ name, description });
       const savedNotif = await newNotif.save();
+      
+      // Emit notification event to WebSocket clients
+      this.webSocket.sendNotification(savedNotif);
+
       return {
         status: HttpStatus.CREATED,
         msg: "Notification Created Successfully!",
