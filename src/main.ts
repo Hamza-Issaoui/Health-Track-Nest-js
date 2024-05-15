@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import { ExtendedSocketIoAdapter } from './app/shared/webSocket/socketAdapter';
 
 async function bootstrap() {
   dotenv.config(); // Load environment variables from .env file
@@ -9,6 +10,8 @@ async function bootstrap() {
 
  // Enable CORS
  app.enableCors();
+
+ app.useWebSocketAdapter(new ExtendedSocketIoAdapter(app.getHttpServer()));
 
   await app.listen(3000);
 }

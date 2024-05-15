@@ -1,5 +1,3 @@
-// user.service.ts
-
 import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -15,23 +13,28 @@ export class NotificationService {
   private readonly webSocket: WebSocket,
 ) {}
 
-  async createNotif(name: string, description: string): Promise<any> {
-    try {
-      const newNotif = new this.notifModel({ name, description });
-      const savedNotif = await newNotif.save();
-      
-      // Emit notification event to WebSocket clients
-      this.webSocket.sendNotification(savedNotif);
+async createNotif(name: string, description: string): Promise<any> {
+  try {
+    const newNotif = new this.notifModel({ name, description });
+    const savedNotif = await newNotif.save();
+    console.log("savedNotif", savedNotif);
 
-      return {
-        status: HttpStatus.CREATED,
-        msg: "Notification Created Successfully!",
-        notification: savedNotif
-      };
-    } catch (error) {
-      throw new Error('Failed to create notification');
-    }
+    this.webSocket.emitter('test', 'test2')
+    
+    // Emit notification event to WebSocket clients
+    this.webSocket.sendNotification(savedNotif);
+    console.log("Notification sent to WebSocket clients");
+
+    return {
+      status: HttpStatus.CREATED,
+      msg: "Notification Created Successfully!",
+      notification: savedNotif
+    };
+  } catch (error) {
+    throw new Error('Failed to create notification');
   }
+}
+
 
   async findByNotifname(name: string): Promise<Notifications> {
     try {
@@ -49,15 +52,13 @@ export class NotificationService {
     try {
       const notif = await this.notifModel.findById(id).exec();
       if (!notif) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('Notification not found');
       }
       return notif;
     } catch (error) {
       throw new NotFoundException('Failed to get notif by id');
     }
   }
-
- 
 
   async findAllNotifs(): Promise<{ message: string, notifs: Notifications[] }> {
     try {
@@ -72,11 +73,11 @@ export class NotificationService {
     try {
       const updatedNotif = await this.notifModel.findByIdAndUpdate(id, updateNotificationDto, { new: true }).exec();
       if (!updatedNotif) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('Notification not found');
       }
       return updatedNotif;
     } catch (error) {
-      throw new Error('Failed to update user');
+      throw new Error('Failed to update notification');
     }
   }
 
@@ -84,7 +85,7 @@ export class NotificationService {
     try {
       const deletedNotif = await this.notifModel.findByIdAndDelete(id).exec();
       if (!deletedNotif) {
-        throw new NotFoundException('User not found');
+        throw new NotFoundException('Notification not found');
       }
       return { message: 'User deleted successfully' };
     } catch (error) {
