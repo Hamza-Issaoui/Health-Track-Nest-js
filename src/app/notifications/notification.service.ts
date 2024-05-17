@@ -19,8 +19,8 @@ async createNotif(name: string, description: string): Promise<any> {
     const savedNotif = await newNotif.save();
     console.log("savedNotif", savedNotif);
 
-    this.webSocket.emitter('test', 'test2')
-    
+   // this.webSocket.emitter('test', 'test2')
+
     // Emit notification event to WebSocket clients
     this.webSocket.sendNotification(savedNotif);
     console.log("Notification sent to WebSocket clients");
@@ -87,9 +87,9 @@ async createNotif(name: string, description: string): Promise<any> {
       if (!deletedNotif) {
         throw new NotFoundException('Notification not found');
       }
-      return { message: 'User deleted successfully' };
+      return { message: 'Notification deleted successfully' };
     } catch (error) {
-      throw new Error('Failed to delete user');
+      throw new Error('Failed to delete notification');
     }
   } 
 
