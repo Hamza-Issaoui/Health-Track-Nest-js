@@ -1,13 +1,12 @@
-// notifications.controller.ts
-
 import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+
 import { CreateNotificationDto } from './dto/create-notif.dto';
 import { Notifications } from './notification.entity';
 import { NotificationService } from './notification.service';
 
 @Controller('notifs')
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
 
   @Post()
   async createNotif(@Body() createNotifDto: CreateNotificationDto): Promise<Notifications> {
@@ -15,12 +14,12 @@ export class NotificationController {
     return this.notificationService.createNotif(name, description);
   }
 
-   @Get(':id') // Define the route parameter
+  @Get(':id')
   async findNotifById(@Param('id') id: string): Promise<Notifications> {
     return this.notificationService.findById(id);
   }
-  
-  @Get(':name') 
+
+  @Get(':name')
   async findUserByName(@Param('name') name: string): Promise<Notifications> {
     return this.notificationService.findByNotifname(name);
   }
@@ -38,9 +37,8 @@ export class NotificationController {
     return this.notificationService.updateNotif(id, updateNotifDto);
   }
 
-
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.notificationService.deleteNotif(id);
-  } 
+  }
 }

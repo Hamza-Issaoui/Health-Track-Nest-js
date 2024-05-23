@@ -1,6 +1,5 @@
-// mailer.service.ts
-
 import { Injectable, Logger } from '@nestjs/common';
+
 import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
 import * as dotenv from "dotenv";
@@ -22,9 +21,6 @@ export class MyMailerService {
     const mailerConfig = this.mailerConfig();
     this.transporter = nodemailer.createTransport(mailerConfig.connectionUrl);
     this.from = `"${mailerConfig.senderName}" ${mailerConfig.senderEmail}`;
-
-    
-    
   }
 
   async sendForgotPasswordEmail(email: string, resetToken: string): Promise<void> {
@@ -64,7 +60,7 @@ export class MyMailerService {
 
   mailerConfig() {
     console.log(this.envConfig, "envconfig");
-    
+
     return {
       senderEmail: this.envConfig.MAILER_SENDER_EMAIL,
       senderName: this.envConfig.MAILER_SENDER_NAME,

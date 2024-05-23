@@ -1,32 +1,27 @@
-// user.controller.ts
-
 import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+
 import { NutrientService } from './nutrient.service';
 import { CreateNutrientDto } from './dto/create-ntrient.dto';
 import { Nutrients } from './nutrient.entity';
 
-
 @Controller('nutrients')
 export class NutrientssController {
-  constructor(private readonly nutrientService: NutrientService) {}
+  constructor(private readonly nutrientService: NutrientService) { }
 
   @Post()
-  async createNutrient(@Body() createmealDto: CreateNutrientDto): Promise<Nutrients> {
-    const { name, description } = createmealDto;
-    return this.nutrientService.create(name, description);
+  async createNutrient(@Body() createNutrientDto: CreateNutrientDto): Promise<Nutrients> {
+    return this.nutrientService.create(createNutrientDto);
   }
 
-   @Get(':id') // Define the route parameter
+  @Get(':id') // Define the route parameter
   async findNutrientById(@Param('id') id: string): Promise<Nutrients> {
     return this.nutrientService.findById(id);
   }
-  
-  @Get(':name') 
+
+  @Get(':name')
   async findNutrientByName(@Param('name') name: string): Promise<Nutrients> {
     return this.nutrientService.findByname(name);
   }
-
-  
 
   @Get()
   async findAllNutrients(): Promise<{ message: string, nutrients: Nutrients[] }> {
@@ -41,9 +36,8 @@ export class NutrientssController {
     return this.nutrientService.update(id, updatenutrientDto);
   }
 
-
   @Delete(':id')
   deleteNutrient(@Param('id') id: string) {
     return this.nutrientService.delete(id);
-  } 
+  }
 }

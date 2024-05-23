@@ -1,5 +1,3 @@
-// user.controller.ts
-
 import {
   Controller,
   Post,
@@ -12,19 +10,18 @@ import {
   UploadedFile,
   UseGuards,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import { diskStorage } from 'multer';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { Users } from './user.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { LocalAuthGuard } from '../Auth/local-auth.guard';
-
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   @UseInterceptors(FileInterceptor('profilePicture', {
@@ -36,28 +33,27 @@ export class UserController {
       },
     }),
   }))
+
   async createUser(@Body() createUserDto: CreateUserDto, @UploadedFile() file): Promise<Users> {
     return this.userService.createUser(createUserDto, file);
   }
-
 
   @Get(':id') // Define the route parameter
   async findUserById(@Param('id') id: string): Promise<Users> {
     return this.userService.findById(id);
   }
-  
-  @Get(':name') 
+
+  @Get(':name')
   async findUserByName(@Param('name') name: string): Promise<Users> {
     return this.userService.findByUsername(name);
   }
 
-  @Get(':email') 
+  @Get(':email')
   async findUserByEmail(@Param('email') email: string): Promise<Users> {
     return this.userService.findByEmail(email);
   }
 
-
- // @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   @Get()
   async findAllUsers(): Promise<{ message: string, users: Users[] }> {
     return await this.userService.findAllUsers();
@@ -71,7 +67,6 @@ export class UserController {
     return this.userService.updateUser(id, updateUserDto);
   }
 
-
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.userService.deleteUser(id);
@@ -79,12 +74,12 @@ export class UserController {
 
   @UseGuards(LocalAuthGuard)
   @Get(':id/profile')
-async getProfile(@Param('id') userId: string): Promise<Users> {
-  return this.userService.getProfile(userId);
+  async getProfile(@Param('id') userId: string): Promise<Users> {
+    return this.userService.getProfile(userId);
   }
 
-@Patch(':id/profile')
-async updateProfile(@Param('id') userId: string, @Body() updateUserDto: CreateUserDto): Promise<Users> {
-  return this.userService.updateProfile(userId, updateUserDto);
+  @Patch(':id/profile')
+  async updateProfile(@Param('id') userId: string, @Body() updateUserDto: CreateUserDto): Promise<Users> {
+    return this.userService.updateProfile(userId, updateUserDto);
   }
 }

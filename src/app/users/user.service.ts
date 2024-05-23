@@ -1,5 +1,4 @@
-// user.service.ts
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
@@ -12,10 +11,10 @@ import { UploadFileService } from '../shared/upload-file/upload-file.service';
 
 @Injectable()
 export class UserService {
-  constructor( @InjectModel('Users')
-   private readonly userModel: Model<Users>,
-   private readonly fileUploadService: UploadFileService
-) {}
+  constructor(@InjectModel('Users')
+  private readonly userModel: Model<Users>,
+    private readonly fileUploadService: UploadFileService
+  ) { }
 
   async createUser(createUserDto: CreateUserDto, file): Promise<Users> {
     try {
@@ -29,14 +28,14 @@ export class UserService {
 
       const existingUser = await this.userModel.findOne({ email }).exec();
       if (existingUser) {
-        throw new ConflictException('User with this email already exists');
+        throw new HttpException("User with this email already exists", HttpStatus.BAD_REQUEST);
       }
 
       const newUser = new this.userModel({ firstname, lastname, phone, role, email, password, profilePicture });
       return await newUser.save();
     } catch (error) {
       console.error('Failed to create user:', error.message);
-      throw new ConflictException('Failed to create user');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -44,11 +43,11 @@ export class UserService {
     try {
       const user = await this.userModel.findOne({ name }).exec();
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
       }
       return user;
     } catch (error) {
-      throw new Error('Failed to find user by name');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -56,11 +55,11 @@ export class UserService {
     try {
       const user = await this.userModel.findById(id).exec();
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
       }
       return user;
     } catch (error) {
-      throw new NotFoundException('Failed action');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -68,12 +67,12 @@ export class UserService {
     try {
       const user = await this.userModel.findOne({ email }).exec();
       if (!user) {
-        throw new NotFoundException('Email not found'); // Customized message
+        throw new HttpException("Email not found", HttpStatus.BAD_REQUEST);
       }
       return user;
     } catch (error) {
       console.error('Failed to find user by email:', error.message);
-      throw new NotFoundException('Email not found'); // Customized message
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -82,7 +81,7 @@ export class UserService {
       const users = await this.userModel.find().exec();
       return { message: 'Users retrieved successfully', users };
     } catch (error) {
-      throw new NotFoundException('Failed to find users');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -90,11 +89,11 @@ export class UserService {
     try {
       const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
       if (!updatedUser) {
-        throw new NotFoundException('User not found');
+        throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
       }
       return updatedUser;
     } catch (error) {
-      throw new Error('Failed to update user');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -102,11 +101,11 @@ export class UserService {
     try {
       const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
       if (!deletedUser) {
-        throw new NotFoundException('User not found');
+        throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
       }
       return { message: 'User deleted successfully' };
     } catch (error) {
-      throw new Error('Failed to delete user');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -117,29 +116,27 @@ export class UserService {
       const { password, ...profile } = user.toObject();
       return profile;
     } catch (error) {
-      throw new Error('Failed to get user profile');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  
+
   async updateProfile(userId: string, updateUserDto: CreateUserDto): Promise<Users> {
     try {
       const updatedUser = await this.userModel.findByIdAndUpdate(userId, updateUserDto, { new: true }).exec();
       if (!updatedUser) {
-        throw new NotFoundException('User not found');
+        throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
       }
       return updatedUser;
     } catch (error) {
-      throw new Error('Failed to update user profile');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-
-
 
   async updateResetToken(userId: string, resetToken: string): Promise<void> {
     try {
       await this.userModel.findByIdAndUpdate(userId, { resetToken }).exec();
     } catch (error) {
-      throw new Error('Failed to update reset token');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -147,11 +144,11 @@ export class UserService {
     try {
       const user = await this.userModel.findOne({ resetToken: token }).exec();
       if (!user) {
-        throw new NotFoundException('User not found');
+        throw new HttpException("User not found", HttpStatus.BAD_REQUEST);
       }
       return user;
     } catch (error) {
-      throw new Error('Failed to find user by reset token');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -160,7 +157,7 @@ export class UserService {
       const hashedPassword = bcrypt.hashSync(newPassword, 10);
       await this.userModel.findByIdAndUpdate(userId, { password: hashedPassword }).exec();
     } catch (error) {
-      throw new Error('Failed to update password');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -168,7 +165,7 @@ export class UserService {
     try {
       await this.userModel.findByIdAndUpdate(userId, { resetToken: null }).exec();
     } catch (error) {
-      throw new Error('Failed to clear reset token');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -176,7 +173,7 @@ export class UserService {
     try {
       await this.userModel.findByIdAndUpdate(userId, { emailVerified: verified }).exec();
     } catch (error) {
-      throw new Error('Failed to update email verification status');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

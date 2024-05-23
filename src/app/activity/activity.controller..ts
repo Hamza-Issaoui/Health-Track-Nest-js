@@ -1,15 +1,12 @@
-// user.controller.ts
-
 import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+
 import { ActivityService } from './activity.service';
 import { Activities } from './activity.entity';
 import { CreateActivityDto } from './dto/create-activity.dto';
 
-
-
 @Controller('Activities')
 export class ActivitiesController {
-  constructor(private readonly activityService: ActivityService) {}
+  constructor(private readonly activityService: ActivityService) { }
 
   @Post()
   async createActivity(@Body() createmealDto: CreateActivityDto): Promise<Activities> {
@@ -17,12 +14,12 @@ export class ActivitiesController {
     return this.activityService.create(name, description);
   }
 
-   @Get(':id') // Define the route parameter
+  @Get(':id')
   async findActivityById(@Param('id') id: string): Promise<Activities> {
     return this.activityService.findById(id);
   }
-  
-  @Get(':name') 
+
+  @Get(':name')
   async findActivityByName(@Param('name') name: string): Promise<Activities> {
     return this.activityService.findByname(name);
   }
@@ -40,9 +37,8 @@ export class ActivitiesController {
     return this.activityService.update(id, updatenutrientDto);
   }
 
-
   @Delete(':id')
   deleteActivity(@Param('id') id: string) {
     return this.activityService.delete(id);
-  } 
+  }
 }

@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { ArrayMinSize, IsString, MinLength, ValidateNested } from 'class-validator';
+
 import { CreateNutrientDto } from 'src/app/nutrient/dto/create-ntrient.dto';
 
 export class CreateMealDto {

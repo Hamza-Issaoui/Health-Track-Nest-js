@@ -1,6 +1,4 @@
-// create-user.dto.ts
-
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 
 export class CreateNotificationDto {
   @IsString()

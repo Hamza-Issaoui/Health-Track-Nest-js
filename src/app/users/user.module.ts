@@ -19,11 +19,11 @@ import { UploadFileService } from '../shared/upload-file/upload-file.service';
     MongooseModule.forFeature([{ name: 'Users', schema: UserSchema }]),
     PassportModule,
     JwtModule.register({
-      secret: 'your_secret_key', 
-      signOptions: { expiresIn: '1d' }, 
-       }),
+      secret: 'your_secret_key',
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
   controllers: [UserController, AuthController],
   providers: [UserService, AuthService, LocalStrategy, MyMailerService, UploadFileService],
 })
-export class UserModule {}
+export class UserModule { }

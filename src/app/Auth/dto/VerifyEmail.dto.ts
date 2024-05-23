@@ -1,5 +1,3 @@
-// verify-email.dto.ts
-
 import { IsNotEmpty, IsEmail } from 'class-validator';
 
 export class VerifyEmailDto {

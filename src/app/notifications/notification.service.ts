@@ -1,50 +1,50 @@
-import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
 import { Model } from 'mongoose';
+
 import { Notifications } from './notification.entity';
 import { CreateNotificationDto } from './dto/create-notif.dto';
 import { WebSocket } from '../shared/webSocket/webSocketGateway';
 
-
 @Injectable()
 export class NotificationService {
-  constructor(@InjectModel(Notifications.name) 
+  constructor(@InjectModel(Notifications.name)
   private notifModel: Model<Notifications>,
-  private readonly webSocket: WebSocket,
-) {}
+    private readonly webSocket: WebSocket,
+  ) { }
 
-async createNotif(name: string, description: string): Promise<any> {
-  try {
-    const newNotif = new this.notifModel({ name, description });
-    const savedNotif = await newNotif.save();
-    console.log("savedNotif", savedNotif);
+  async createNotif(name: string, description: string): Promise<any> {
+    try {
+      const newNotif = new this.notifModel({ name, description });
+      const savedNotif = await newNotif.save();
+      console.log("savedNotif", savedNotif);
 
-   // this.webSocket.emitter('test', 'test2')
+      // this.webSocket.emitter('test', 'test2')
 
-    // Emit notification event to WebSocket clients
-    this.webSocket.sendNotification(savedNotif);
-    console.log("Notification sent to WebSocket clients");
+      // Emit notification event to WebSocket clients
+      this.webSocket.sendNotification(savedNotif);
+      console.log("Notification sent to WebSocket clients");
 
-    return {
-      status: HttpStatus.CREATED,
-      msg: "Notification Created Successfully!",
-      notification: savedNotif
-    };
-  } catch (error) {
-    throw new Error('Failed to create notification');
+      return {
+        status: HttpStatus.CREATED,
+        msg: "Notification Created Successfully!",
+        notification: savedNotif
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
-}
-
 
   async findByNotifname(name: string): Promise<Notifications> {
     try {
       const notif = await this.notifModel.findOne({ name }).exec();
       if (!notif) {
-        throw new NotFoundException('Notification not found');
+        throw new HttpException("Notification not found", HttpStatus.BAD_REQUEST);
       }
       return notif;
     } catch (error) {
-      throw new Error('Failed to find notification by name');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -52,11 +52,11 @@ async createNotif(name: string, description: string): Promise<any> {
     try {
       const notif = await this.notifModel.findById(id).exec();
       if (!notif) {
-        throw new NotFoundException('Notification not found');
+        throw new HttpException("Notification not found", HttpStatus.BAD_REQUEST);
       }
       return notif;
     } catch (error) {
-      throw new NotFoundException('Failed to get notif by id');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -65,7 +65,7 @@ async createNotif(name: string, description: string): Promise<any> {
       const notifs = await this.notifModel.find().exec();
       return { message: 'Notifications retrieved successfully', notifs };
     } catch (error) {
-      throw new NotFoundException('Failed to find notifications');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -73,11 +73,11 @@ async createNotif(name: string, description: string): Promise<any> {
     try {
       const updatedNotif = await this.notifModel.findByIdAndUpdate(id, updateNotificationDto, { new: true }).exec();
       if (!updatedNotif) {
-        throw new NotFoundException('Notification not found');
+        throw new HttpException("Notification not found", HttpStatus.BAD_REQUEST);
       }
       return updatedNotif;
     } catch (error) {
-      throw new Error('Failed to update notification');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -85,12 +85,12 @@ async createNotif(name: string, description: string): Promise<any> {
     try {
       const deletedNotif = await this.notifModel.findByIdAndDelete(id).exec();
       if (!deletedNotif) {
-        throw new NotFoundException('Notification not found');
+        throw new HttpException("Notification not found", HttpStatus.BAD_REQUEST);
       }
       return { message: 'Notification deleted successfully' };
     } catch (error) {
-      throw new Error('Failed to delete notification');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-  } 
+  }
 
 }

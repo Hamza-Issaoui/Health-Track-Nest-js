@@ -1,29 +1,27 @@
-// user.controller.ts
-
 import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+
 import { MealService } from './meal.service';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { Meals } from './meal.entity';
 
-
 @Controller('meals')
 export class MealsController {
-  constructor(private readonly mealService: MealService) {}
+  constructor(private readonly mealService: MealService) { }
 
   @Post()
   async createMeal(@Body() createMealDto: CreateMealDto): Promise<Meals> {
     return this.mealService.create(createMealDto);
   }
-   @Get(':id') // Define the route parameter
+
+  @Get(':id')
   async findMealById(@Param('id') id: string): Promise<Meals> {
     return this.mealService.findById(id);
   }
-  
-  @Get(':name') 
+
+  @Get(':name')
   async findMealByName(@Param('name') name: string): Promise<Meals> {
     return this.mealService.findByname(name);
   }
-
 
   @Get()
   async findAllMeals(): Promise<{ message: string, meals: Meals[] }> {
@@ -38,9 +36,8 @@ export class MealsController {
     return this.mealService.update(id, updateMealDto);
   }
 
-
   @Delete(':id')
   deleteMeal(@Param('id') id: string) {
     return this.mealService.delete(id);
-  } 
+  }
 }

@@ -1,23 +1,25 @@
-// user.service.ts
-
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
 import { Model } from 'mongoose';
+
 import { Activities } from './activity.entity';
 import { CreateActivityDto } from './dto/create-activity.dto';
 
-
 @Injectable()
 export class ActivityService {
-  constructor(@InjectModel(Activities.name) private activityModel: Model<Activities>) {}
 
-   async create(name: string, description: string, ): Promise<Activities> {
+  constructor(
+    @InjectModel(Activities.name) private activityModel: Model<Activities>
+  ) { }
+
+  async create(name: string, description: string,): Promise<Activities> {
     try {
-        const newActivity = new this.activityModel({ name, description });
-        return await newActivity.save();
+      const newActivity = new this.activityModel({ name, description });
+      return await newActivity.save();
 
     } catch (error) {
-        throw new Error('Failed to create activity');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -25,11 +27,11 @@ export class ActivityService {
     try {
       const activity = await this.activityModel.findOne({ name }).exec();
       if (!activity) {
-        throw new NotFoundException('Activity not found');
+        throw new HttpException("Activity not found", HttpStatus.BAD_REQUEST);
       }
       return activity;
     } catch (error) {
-      throw new Error('Failed to find activity by name');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -37,22 +39,20 @@ export class ActivityService {
     try {
       const activity = await this.activityModel.findById(id).exec();
       if (!activity) {
-        throw new NotFoundException('Activity not found');
+        throw new HttpException("Activity not found", HttpStatus.BAD_REQUEST);
       }
       return activity;
     } catch (error) {
-      throw new NotFoundException('Failed to get activity by id');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-
- 
 
   async findAll(): Promise<{ message: string, activity: Activities[] }> {
     try {
       const activity = await this.activityModel.find().exec();
       return { message: 'Activities retrieved successfully', activity };
     } catch (error) {
-      throw new NotFoundException('Failed to find all activities');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -60,11 +60,11 @@ export class ActivityService {
     try {
       const updatedActivity = await this.activityModel.findByIdAndUpdate(id, updateactivityDto, { new: true }).exec();
       if (!updatedActivity) {
-        throw new NotFoundException('cAtivity not found');
+        throw new HttpException("Activity not found", HttpStatus.BAD_REQUEST);
       }
       return updatedActivity;
     } catch (error) {
-      throw new Error('Failed to update activity');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -72,12 +72,12 @@ export class ActivityService {
     try {
       const deleted = await this.activityModel.findByIdAndDelete(id).exec();
       if (!deleted) {
-        throw new NotFoundException('Activity not found');
+        throw new HttpException("Activity not found", HttpStatus.BAD_REQUEST);
       }
       return { message: 'Activity deleted successfully' };
     } catch (error) {
-      throw new Error('Failed to delete activity');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-  } 
+  }
 
 }

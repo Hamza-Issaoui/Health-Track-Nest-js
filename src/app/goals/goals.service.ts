@@ -1,24 +1,25 @@
 // user.service.ts
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
 import { Model } from 'mongoose';
+
 import { Goals } from './goals.entity';
 import { CreateGoalDto } from './dto/create-goal.dto';
 
-
-
 @Injectable()
 export class GoalService {
-  constructor(@InjectModel(Goals.name) private goalModel: Model<Goals>) {}
 
-   async create(name: string, description: string, ): Promise<Goals> {
+  constructor(@InjectModel(Goals.name) private goalModel: Model<Goals>) { }
+
+  async create(name: string, description: string,): Promise<Goals> {
     try {
-        const newGoal = new this.goalModel({ name, description });
-        return await newGoal.save();
+      const newGoal = new this.goalModel({ name, description });
+      return await newGoal.save();
 
     } catch (error) {
-        throw new Error('Failed to create goal');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -26,11 +27,11 @@ export class GoalService {
     try {
       const goal = await this.goalModel.findOne({ name }).exec();
       if (!goal) {
-        throw new NotFoundException('Goal not found');
+        throw new HttpException("Goal not found", HttpStatus.BAD_REQUEST);
       }
       return goal;
     } catch (error) {
-      throw new Error('Failed to find goal by name');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -38,22 +39,20 @@ export class GoalService {
     try {
       const goal = await this.goalModel.findById(id).exec();
       if (!goal) {
-        throw new NotFoundException('Goal not found');
+        throw new HttpException("Goal not found", HttpStatus.BAD_REQUEST);
       }
       return goal;
     } catch (error) {
-      throw new NotFoundException('Failed to get goal by id');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-
- 
 
   async findAll(): Promise<{ message: string, goals: Goals[] }> {
     try {
       const goals = await this.goalModel.find().exec();
       return { message: 'Goals retrieved successfully', goals };
     } catch (error) {
-      throw new NotFoundException('Failed to find goals');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -61,11 +60,11 @@ export class GoalService {
     try {
       const updatedGoal = await this.goalModel.findByIdAndUpdate(id, updategoalDto, { new: true }).exec();
       if (!updatedGoal) {
-        throw new NotFoundException('Goal not found');
+        throw new HttpException("Goal not found", HttpStatus.BAD_REQUEST);
       }
       return updatedGoal;
     } catch (error) {
-      throw new Error('Failed to update goal');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -73,12 +72,12 @@ export class GoalService {
     try {
       const deletedGoal = await this.goalModel.findByIdAndDelete(id).exec();
       if (!deletedGoal) {
-        throw new NotFoundException('Goal not found');
+        throw new HttpException("Goal not found", HttpStatus.BAD_REQUEST);
       }
       return { message: 'Goal deleted successfully' };
     } catch (error) {
-      throw new Error('Failed to delete goal');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-  } 
+  }
 
 }

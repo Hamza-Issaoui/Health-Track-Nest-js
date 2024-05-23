@@ -1,62 +1,63 @@
-import { HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../users/user.service';
+import { InjectModel } from '@nestjs/mongoose';
 import { PassportStrategy } from '@nestjs/passport';
+
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { Users } from '../users/user.entity';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { MyMailerService } from '../shared/mailer/mailer.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+
+import { Users } from '../users/user.entity';
+import { UserService } from '../users/user.service';
+import { CreateUserDto } from '../users/dto/create-user.dto';
+import { MyMailerService } from '../shared/mailer/mailer.service';
 
 
 const RefreshTokens: { [key: string]: string } = {};
 
-
 @Injectable()
 export class AuthService {
+  
   constructor(
     private usersService: UserService,
     @InjectModel('Users') private readonly userModel: Model<Users>,
     private jwtService: JwtService,
-    private mailerService: MyMailerService, 
-  ) {}
+    private mailerService: MyMailerService,
+  ) { }
 
-  async validateUser(email: string, password: string): Promise<Users| null> {
+  async validateUser(email: string, password: string): Promise<Users | null> {
     try {
       const user = await this.usersService.findByEmail(email);
-      console.log("user",user);
+      console.log("user", user);
       if (user && bcrypt.compareSync(password, user.password)) {
         return user;
       }
       return null;
     } catch (error) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
   async register(createUserDto: CreateUserDto, file): Promise<any> {
     try {
-      const { password, ...userData } = createUserDto; 
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    await this.usersService.createUser({ ...userData, password: hashedPassword },file); 
-    return {
+      const { password, ...userData } = createUserDto;
+      const hashedPassword = bcrypt.hashSync(password, 10);
+      await this.usersService.createUser({ ...userData, password: hashedPassword }, file);
+      return {
         status: HttpStatus.CREATED,
         msg: "User Created Successfully!"
-           };
-       } catch (error) {
-      throw new Error('Failed to register user');
+      };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  
 
   async login(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
-    
+
     if (!user) {
-      throw new NotFoundException('Email not found!');
+      throw new HttpException("Email not found", HttpStatus.BAD_REQUEST);
     }
 
     const passwordCompare = bcrypt.compareSync(password, user.password);
@@ -87,14 +88,14 @@ export class AuthService {
         refreshToken: newRefreshToken,
       };
     } else {
-      throw new NotFoundException('Refresh token not found!');
+      throw new HttpException("Refresh token not found !", HttpStatus.BAD_REQUEST);
     }
   }
 
   async forgotPassword(email: string): Promise<void> {
     const user = await this.userModel.findOne({ email });
     if (!user) {
-        throw new NotFoundException('User not found');
+      throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
     }
 
     // Generate a reset token 
@@ -105,8 +106,7 @@ export class AuthService {
 
     // Send the forgot password email
     await this.mailerService.sendForgotPasswordEmail(email, resetToken);
-}
-
+  }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     const user = await this.usersService.findByResetToken(token);
@@ -133,7 +133,7 @@ export class AuthService {
   async verifyEmail(email: string): Promise<void> {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new HttpException("User not found !", HttpStatus.BAD_REQUEST);
     }
     await this.usersService.updateEmailVerificationStatus(user.id, true);
     // Mettez en œuvre toute autre logique de vérification nécessaire
