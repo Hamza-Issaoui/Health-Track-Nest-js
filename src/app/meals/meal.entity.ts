@@ -12,7 +12,16 @@ export class Meals extends Document {
   name: string;
 
   @Prop({ required: true })
-  description: string;
+  date: Date;
+
+  @Prop({ required: true, default: 0 })
+  totalCalories: number;
+
+  @Prop({ required: true, enum: ['breakfast', 'dinner', 'lunch', 'snack'] })
+  mealType: string;  
+
+  @Prop()
+  notes: string;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Nutrients' }] })
   nutrients: Nutrients[];

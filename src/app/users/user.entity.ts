@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 import { NotificationSchema, Notifications } from '../notifications/notification.entity';
+import { Medical } from '../suivi-medical/medical.entity';
 
 @Schema({ timestamps: true })
 export class Users extends Document {
@@ -27,7 +28,12 @@ export class Users extends Document {
   @Prop()
   profilePicture: string;
 
-  @Prop({ type: [NotificationSchema] })
+  //one to one relation 
+   @Prop({ type: Types.ObjectId, ref: 'Medical' })
+   medicalRecord: Medical;
+
+  // many to many relation
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Notifications' }] })
   notifications: Notifications[];
 }
 

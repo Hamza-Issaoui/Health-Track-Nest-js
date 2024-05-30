@@ -1,15 +1,29 @@
 import { Type } from 'class-transformer';
-import { ArrayMinSize, IsString, MinLength, ValidateNested } from 'class-validator';
+import { ArrayMinSize, IsDate, IsIn, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
 
-import { CreateNutrientDto } from 'src/app/nutrient/dto/create-ntrient.dto';
+import { CreateNutrientDto } from 'src/app/nutrient/dto/create-nutrient.dto';
 
 export class CreateMealDto {
+  @IsNotEmpty()
   @IsString()
-  readonly name: string;
+  name: string;
+
+  @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
+  date: Date;
+
+  @IsNotEmpty()
+  @IsNumber()
+  totalCalories: number;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsIn(['breakfast', 'dinner', 'lunch', 'snack'])
+  mealType: string;
 
   @IsString()
-  @MinLength(6)
-  readonly description: string;
+  notes?: string;
 
   @ValidateNested({ each: true })
   @Type(() => CreateNutrientDto)

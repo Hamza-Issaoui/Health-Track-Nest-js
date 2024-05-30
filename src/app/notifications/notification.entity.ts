@@ -5,18 +5,20 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Notifications extends Document {
 
-  @Prop({ required: true })
-  name: string;
+  @Prop({ required: false })
+  title: string;
 
   @Prop({ required: true })
-  description: string;
+  message: string;
 
-  // @Prop({ required: true })
-  // read: string;
+  @Prop({ required: false, enum: ['info', 'warning', 'alert'] })
+  type: string;
 
-  // @Prop({ required: true, enum: ['info', 'warninig', 'error'] })
-  // type: string;
+  @Prop({ required: false, default: false })
+  read: boolean;
 
+  @Prop({ required: false, enum: ['low', 'medium', 'high'] })
+  priority: string;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notifications);

@@ -7,11 +7,25 @@ import { Document } from 'mongoose';
 export class Activities extends Document {
 
   @Prop({ required: true })
-  name: string;
+  type: string;
 
   @Prop({ required: true })
-  description: string;
+  date: Date;
 
+  @Prop({ required: true })
+  duration: number;
+
+  @Prop({ required: true })
+  caloriesBurned: number;
+  
+  @Prop()
+  location?: string;
+
+  @Prop()
+  notes?: string;
+
+  @Prop({ enum: ['Low', 'Moderate', 'High'] })
+  intensity?: string;
 }
 
 export const ActivitySchema = SchemaFactory.createForClass(Activities);

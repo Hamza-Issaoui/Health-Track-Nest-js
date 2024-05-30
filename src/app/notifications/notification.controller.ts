@@ -10,8 +10,7 @@ export class NotificationController {
 
   @Post()
   async createNotif(@Body() createNotifDto: CreateNotificationDto): Promise<Notifications> {
-    const { name, description } = createNotifDto;
-    return this.notificationService.createNotif(name, description);
+    return this.notificationService.createNotif(createNotifDto);
   }
 
   @Get(':id')

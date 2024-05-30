@@ -10,7 +10,19 @@ export class Nutrients extends Document {
   name: string;
 
   @Prop({ required: true })
-  description: string;
+  quantity: number;
+
+  @Prop({ required: true })
+  unit: string;
+
+  @Prop({ required: true })
+  type: string;
+
+  @Prop({ required: false })
+  source: string;
+
+  @Prop({ required: false })
+  calories: number;
 
   @Prop({ type: Types.ObjectId, ref: 'Meals', required: true })
   meal: Types.ObjectId;

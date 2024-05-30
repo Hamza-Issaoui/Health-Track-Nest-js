@@ -9,10 +9,10 @@ export class ActivitiesController {
   constructor(private readonly activityService: ActivityService) { }
 
   @Post()
-  async createActivity(@Body() createmealDto: CreateActivityDto): Promise<Activities> {
-    const { name, description } = createmealDto;
-    return this.activityService.create(name, description);
+  async createNutrient(@Body() createActivityDto: CreateActivityDto): Promise<Activities> {
+    return this.activityService.create(createActivityDto);
   }
+
 
   @Get(':id')
   async findActivityById(@Param('id') id: string): Promise<Activities> {

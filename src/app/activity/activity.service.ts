@@ -13,9 +13,10 @@ export class ActivityService {
     @InjectModel(Activities.name) private activityModel: Model<Activities>
   ) { }
 
-  async create(name: string, description: string,): Promise<Activities> {
+  async create(createActivityDto:CreateActivityDto): Promise<Activities> {
     try {
-      const newActivity = new this.activityModel({ name, description });
+      const { ...userData } = createActivityDto
+      const newActivity = new this.activityModel({ userData });
       return await newActivity.save();
 
     } catch (error) {

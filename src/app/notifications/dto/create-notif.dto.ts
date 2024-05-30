@@ -1,10 +1,25 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateNotificationDto {
   @IsString()
-  readonly name: string;
+  readonly message: string;
 
   @IsString()
+  @IsOptional()
   @MinLength(6)
-  readonly description: string;
+  readonly title?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['info', 'warning', 'alert'])
+  readonly type?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  readonly read?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['low', 'medium', 'high'])
+  readonly priority?: string;
 }

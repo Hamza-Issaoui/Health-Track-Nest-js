@@ -1,10 +1,55 @@
-import { IsString, MinLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateGoalDto {
-  @IsString()
-  readonly name: string;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  weightGoal: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
-  @MinLength(6)
-  readonly description: string;
+  activityGoal: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  nutritionGoal: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  startDate?: Date;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  endDate?: Date;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  currentWeight?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  targetCalories?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  stepsGoal?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  waterIntakeGoal?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  sleepGoal?: number;
 }

@@ -11,11 +11,13 @@ import { CreateGoalDto } from './dto/create-goal.dto';
 @Injectable()
 export class GoalService {
 
-  constructor(@InjectModel(Goals.name) private goalModel: Model<Goals>) { }
+  constructor(@InjectModel(Goals.name) 
+  private goalModel: Model<Goals>) { }
 
-  async create(name: string, description: string,): Promise<Goals> {
+  async create(creatGoalDto:CreateGoalDto): Promise<Goals> {
     try {
-      const newGoal = new this.goalModel({ name, description });
+      const { ...userData } = creatGoalDto
+      const newGoal = new this.goalModel({ userData });
       return await newGoal.save();
 
     } catch (error) {

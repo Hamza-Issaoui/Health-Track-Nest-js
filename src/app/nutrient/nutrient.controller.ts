@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
 
 import { NutrientService } from './nutrient.service';
-import { CreateNutrientDto } from './dto/create-ntrient.dto';
+import { CreateNutrientDto } from './dto/create-nutrient.dto';
 import { Nutrients } from './nutrient.entity';
 
 @Controller('nutrients')

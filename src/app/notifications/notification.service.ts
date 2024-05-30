@@ -14,9 +14,10 @@ export class NotificationService {
     private readonly webSocket: WebSocket,
   ) { }
 
-  async createNotif(name: string, description: string): Promise<any> {
+  async createNotif(createNotifDto: CreateNotificationDto): Promise<any> {
     try {
-      const newNotif = new this.notifModel({ name, description });
+      const { ...notifData } = createNotifDto;
+      const newNotif = new this.notifModel({ notifData });
       const savedNotif = await newNotif.save();
       console.log("savedNotif", savedNotif);
 

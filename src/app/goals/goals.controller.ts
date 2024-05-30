@@ -12,8 +12,7 @@ export class GoalsController {
 
   @Post()
   async createGoal(@Body() creategoalDto: CreateGoalDto): Promise<Goals> {
-    const { name, description } = creategoalDto;
-    return this.goalService.create(name, description);
+    return this.goalService.create(creategoalDto);
   }
 
   @Get(':id')

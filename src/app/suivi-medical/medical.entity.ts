@@ -6,6 +6,7 @@ import { Medications } from '../medication/medication.entity';
 import { Allergy } from '../allergy/allergy.entity';
 import { Symptom } from '../symptom/symptom.entity';
 import { Appointments } from '../appointment/appointment.entity';
+import { Users } from '../users/user.entity';
 
 @Schema({ timestamps: true })
 export class Medical extends Document {
@@ -15,6 +16,10 @@ export class Medical extends Document {
 
   @Prop({ required: true })
   description: string;
+
+  // one to one relation
+  @Prop({ type: Types.ObjectId, ref: 'Users', unique: true, required: true })
+  client: Users;
 
   // relation one to many
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Medication' }] })
