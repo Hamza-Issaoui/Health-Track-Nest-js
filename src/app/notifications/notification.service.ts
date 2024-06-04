@@ -19,13 +19,12 @@ export class NotificationService {
       const { ...notifData } = createNotifDto;
       const newNotif = new this.notifModel({ notifData });
       const savedNotif = await newNotif.save();
-      console.log("savedNotif", savedNotif);
 
       // this.webSocket.emitter('test', 'test2')
 
       // Emit notification event to WebSocket clients
       this.webSocket.sendNotification(savedNotif);
-      console.log("Notification sent to WebSocket clients");
+      console.warn("Notification sent to WebSocket clients");
 
       return {
         status: HttpStatus.CREATED,

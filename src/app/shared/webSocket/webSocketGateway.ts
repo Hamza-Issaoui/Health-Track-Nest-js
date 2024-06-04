@@ -48,11 +48,11 @@ export class WebSocket {
 //   @WebSocketServer() server: Server;
 
 //   handleConnection(_client) {
-//     console.log('WebSocket client connected');
+//     console.warn('WebSocket client connected');
 //   }
 
 //   handleDisconnect(_client) {
-//     console.log('WebSocket client disconnected');
+//     console.warn('WebSocket client disconnected');
 //   }
 
 

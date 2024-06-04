@@ -59,8 +59,6 @@ export class MyMailerService {
   }
 
   mailerConfig() {
-    console.log(this.envConfig, "envconfig");
-
     return {
       senderEmail: this.envConfig.MAILER_SENDER_EMAIL,
       senderName: this.envConfig.MAILER_SENDER_NAME,
