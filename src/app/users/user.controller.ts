@@ -72,7 +72,7 @@ export class UserController {
     return this.userService.deleteUser(id);
   }
 
-  @UseGuards(LocalAuthGuard)
+  //@UseGuards(LocalAuthGuard)
   @Get(':id/profile')
   async getProfile(@Param('id') userId: string): Promise<Users> {
     return this.userService.getProfile(userId);

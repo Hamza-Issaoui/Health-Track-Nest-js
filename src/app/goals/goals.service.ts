@@ -14,12 +14,10 @@ export class GoalService {
   constructor(@InjectModel(Goals.name) 
   private goalModel: Model<Goals>) { }
 
-  async create(creatGoalDto:CreateGoalDto): Promise<Goals> {
+  async create(createGoalDto:CreateGoalDto): Promise<Goals> {
     try {
-      const { ...userData } = creatGoalDto
-      const newGoal = new this.goalModel({ userData });
+      const newGoal = new this.goalModel(createGoalDto);
       return await newGoal.save();
-
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

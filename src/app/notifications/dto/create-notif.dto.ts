@@ -2,24 +2,20 @@ import { IsBoolean, IsIn, IsOptional, IsString, MinLength } from 'class-validato
 
 export class CreateNotificationDto {
   @IsString()
-  readonly message: string;
+  readonly description: string;
 
   @IsString()
-  @IsOptional()
   @MinLength(6)
-  readonly title?: string;
+  readonly title: string;
 
   @IsString()
-  @IsOptional()
   @IsIn(['info', 'warning', 'alert'])
-  readonly type?: string;
+  readonly type: string;
 
   @IsBoolean()
-  @IsOptional()
-  readonly read?: boolean;
+  readonly read: boolean;
 
   @IsString()
-  @IsOptional()
   @IsIn(['low', 'medium', 'high'])
-  readonly priority?: string;
+  readonly priority: string;
 }

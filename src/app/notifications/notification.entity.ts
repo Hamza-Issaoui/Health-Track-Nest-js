@@ -5,19 +5,19 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Notifications extends Document {
 
-  @Prop({ required: false })
+  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })
-  message: string;
+  description: string;
 
-  @Prop({ required: false, enum: ['info', 'warning', 'alert'] })
+  @Prop({ required: false, enum: ['Info', 'Warning', 'Alert'] })
   type: string;
 
   @Prop({ required: false, default: false })
   read: boolean;
 
-  @Prop({ required: false, enum: ['low', 'medium', 'high'] })
+  @Prop({ required: false, enum: ['Low', 'Medium', 'High'] })
   priority: string;
 }
 

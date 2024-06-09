@@ -1,3 +1,4 @@
+
 import { IsString, IsEmail, MinLength, IsIn } from 'class-validator';
 
 export class CreateUserDto {
@@ -11,7 +12,7 @@ export class CreateUserDto {
   readonly phone: number;
 
   @IsString()
-  @IsIn(['admin', 'client', 'coach'])
+  @IsIn(['Admin', 'Client', 'Coach'])
   readonly role: string;
 
   @IsEmail()

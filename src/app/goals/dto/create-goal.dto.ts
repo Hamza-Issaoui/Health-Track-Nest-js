@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Min, Max } from 'class-validator';
 
 export class CreateGoalDto {
-
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -36,20 +35,39 @@ export class CreateGoalDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  targetCalories?: number;
+  height?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  stepsGoal?: number;
+  age?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  sex?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  activityLevel?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  goalType?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  waterIntakeGoal?: number;
+  @Min(1)
+  @Max(7)
+  exerciseDaysPerWeek?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  sleepGoal?: number;
+  @Min(10)
+  @Max(180)
+  exerciseMinutesPerSession?: number;
 }

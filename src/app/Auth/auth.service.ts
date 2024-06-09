@@ -43,10 +43,11 @@ export class AuthService {
     try {
       const { password, ...userData } = createUserDto;
       const hashedPassword = bcrypt.hashSync(password, 10);
-      await this.usersService.createUser({ ...userData, password: hashedPassword }, file);
+     const user = await this.usersService.createUser({ ...userData, password: hashedPassword }, file);
       return {
         status: HttpStatus.CREATED,
-        msg: "User Created Successfully!"
+        msg: "User Created Successfully!",
+        user
       };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -71,7 +72,7 @@ export class AuthService {
     return {
       email: user.email,
       user: user,
-      token: token,
+      accessToken: token,
       expiresIn: 1,
       refreshToken: refreshToken,
     };

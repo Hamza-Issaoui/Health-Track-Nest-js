@@ -16,8 +16,7 @@ export class NotificationService {
 
   async createNotif(createNotifDto: CreateNotificationDto): Promise<any> {
     try {
-      const { ...notifData } = createNotifDto;
-      const newNotif = new this.notifModel({ notifData });
+      const newNotif = new this.notifModel(createNotifDto);
       const savedNotif = await newNotif.save();
       console.log("savedNotif", savedNotif);
 

@@ -16,7 +16,7 @@ export class Users extends Document {
   @Prop({ required: true })
   phone: number;
 
-  @Prop({ required: true, default: 'client', enum: ['admin', 'client', 'coach'] })
+  @Prop({ required: true, default: 'Client', enum: ['Admin', 'Client', 'Coach'] })
   role: string;
 
   @Prop({ required: true })
