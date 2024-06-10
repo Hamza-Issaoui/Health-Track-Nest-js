@@ -35,7 +35,7 @@ export class NutrientService {
     try {
       const nutrient = await newNutrient.save();
       await this.mealModel.findByIdAndUpdate(mealId, { 
-        $push: { nutrients: nutrient._id },
+        $push: { nutrients: nutrient },
         $inc: { totalCalories: calories }
       });
       return nutrient;

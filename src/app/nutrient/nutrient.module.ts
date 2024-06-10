@@ -15,5 +15,6 @@ import { MealModule } from '../meals/meal.module';
   ],
   controllers: [NutrientssController],
   providers: [NutrientService],
+  exports: [MongooseModule],
 })
 export class NutrientModule { }

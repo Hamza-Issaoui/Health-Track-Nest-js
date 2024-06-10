@@ -1,4 +1,5 @@
 import { IsMongoId, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { CreateMedicalDto } from 'src/app/suivi-medical/dto/create-medical.dto';
 
 export class CreateAllergyDto {
   @IsString()
@@ -11,6 +12,6 @@ export class CreateAllergyDto {
   // relation many to one
   @IsMongoId()
   @IsNotEmpty()
-  readonly medicalId: string;
+  readonly medicalId: CreateMedicalDto[];
 
 }

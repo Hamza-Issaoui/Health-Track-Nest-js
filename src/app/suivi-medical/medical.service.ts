@@ -46,12 +46,17 @@ export class MedicalService {
     }
   }
 
-  async findAll(): Promise<{ message: string, medical: Medical[] }> {
+  async findAll(): Promise<{ message: string; medical: Medical[] }> {
     try {
-      const medical = await this.medicalModel.find({})
+      const medicalRecords = await this.medicalModel
+        .find({})
+        .populate('medications')
         .populate('allergies')
+        .populate('symptoms')
+        .populate('appointments')
         .exec();
-      return { message: 'Medical-Records retrieved successfully', medical };
+
+      return { message: 'Medical records retrieved successfully', medical: medicalRecords };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

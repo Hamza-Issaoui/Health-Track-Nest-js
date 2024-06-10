@@ -27,7 +27,7 @@ export class MedicationService {
 
         try {
             const medication = await newMedication.save();
-            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { medications: medication._id } });
+            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { medications: medication } });
             return medication;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

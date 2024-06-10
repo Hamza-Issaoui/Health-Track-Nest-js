@@ -27,7 +27,7 @@ export class AppointmentService {
 
         try {
             const appointment = await newAppoint.save();
-            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { appointments: appointment._id } });
+            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { appointments: appointment } });
             return appointment;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

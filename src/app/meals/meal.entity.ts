@@ -18,11 +18,16 @@ export class Meals extends Document {
   totalCalories: number;
 
   @Prop({ required: true, enum: ['breakfast', 'dinner', 'lunch', 'snack'] })
-  mealType: string;  
+  mealType: string;
 
   @Prop()
   notes: string;
 
+  // many to one relation
+  @Prop({ type: Types.ObjectId, ref: 'Client', required: true })
+  user: Types.ObjectId;
+
+  // one to many relation
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Nutrients' }] })
   nutrients: Nutrients[];
 }

@@ -28,7 +28,7 @@ export class SymptomService {
 
         try {
             const symptom = await newSymptom.save();
-            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { symptoms: symptom._id } });
+            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { symptoms: symptom } });
             return symptom;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

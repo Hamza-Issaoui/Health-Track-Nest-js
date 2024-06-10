@@ -1,9 +1,8 @@
 import { Type } from 'class-transformer';
-import { ArrayMinSize, IsString, MinLength, ValidateNested } from 'class-validator';
+import { ArrayMinSize, IsMongoId, IsNotEmpty, IsString, MinLength, ValidateNested } from 'class-validator';
 import { CreateAllergyDto } from 'src/app/allergy/dto/allergy.dto';
 import { CreateAppointDto } from 'src/app/appointment/dto/create-appointment.dto';
 import { CreateMedicationDto } from 'src/app/medication/dto/medication.dto';
-
 import { CreateSymptomDto } from 'src/app/symptom/dto/symptom.dto';
 
 export class CreateMedicalDto {
@@ -14,6 +13,10 @@ export class CreateMedicalDto {
   @MinLength(6)
   readonly description: string;
 
+// relation many to one
+/* @IsMongoId()
+@IsNotEmpty()
+readonly userId: string; */
 
   // relation one to many
   @ValidateNested({ each: true })
@@ -35,7 +38,4 @@ export class CreateMedicalDto {
   @Type(() => CreateAppointDto)
   @ArrayMinSize(1)
   readonly appointments: CreateAppointDto[];
-
-
 }
-

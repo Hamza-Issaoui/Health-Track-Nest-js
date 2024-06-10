@@ -17,9 +17,9 @@ export class Medical extends Document {
   @Prop({ required: true })
   description: string;
 
-  // one to one relation
+ /*  // one to one relation
   @Prop({ type: Types.ObjectId, ref: 'Users', unique: true, required: true })
-  client: Users;
+  client: Users; */
 
   // relation one to many
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Medication' }] })

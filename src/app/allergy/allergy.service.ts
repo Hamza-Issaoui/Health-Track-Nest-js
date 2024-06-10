@@ -26,7 +26,7 @@ export class AllergyService {
 
         try {
             const allergy = await newAllergy.save();
-            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { allergies: allergy._id } });
+            await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { allergies: allergy } });
             return allergy;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
