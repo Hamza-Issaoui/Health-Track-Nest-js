@@ -7,22 +7,47 @@ import { Model } from 'mongoose';
 
 import { Goals } from './goals.entity';
 import { CreateGoalDto } from './dto/create-goal.dto';
+import { Users } from '../users/user.entity';
 
 @Injectable()
 export class GoalService {
 
-  constructor(@InjectModel(Goals.name) 
-  private goalModel: Model<Goals>) { }
+  constructor(
+    @InjectModel(Goals.name) private goalModel: Model<Goals>) { }
+  @InjectModel(Users.name) private userModel: Model<Users>
 
-  async create(createGoalDto:CreateGoalDto): Promise<Goals> {
+  async create(createGoalDto: CreateGoalDto): Promise<Goals> {
+    const { weightGoal, activityGoal, nutritionGoal, startDate, endDate, currentWeight, height, age, sex, activityLevel, goalType, exerciseDaysPerWeek, exerciseMinutesPerSession, userId } = createGoalDto;
+
+    // Create new goal object
+    const newGoal = new this.goalModel({
+      weightGoal,
+      activityGoal,
+      nutritionGoal,
+      startDate,
+      endDate,
+      currentWeight,
+      height,
+      age,
+      sex,
+      activityLevel,
+      goalType,
+      exerciseDaysPerWeek,
+      exerciseMinutesPerSession,
+      user: userId // Linking goal to the user
+    });
+
     try {
-      const newGoal = new this.goalModel(createGoalDto);
-      return await newGoal.save();
+      const goal = await newGoal.save();
+      await this.userModel.findByIdAndUpdate(userId, {
+        $push: { goals: goal }
+      });
+
+      return goal;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-
   async findByname(name: string): Promise<Goals> {
     try {
       const goal = await this.goalModel.findOne({ name }).exec();
@@ -74,6 +99,12 @@ export class GoalService {
       if (!deletedGoal) {
         throw new HttpException("Goal not found", HttpStatus.BAD_REQUEST);
       }
+
+      // Remove the goal reference from the user's goals array
+      await this.userModel.findByIdAndUpdate(deletedGoal.user, {
+        $pull: { goals: id }
+      });
+
       return { message: 'Goal deleted successfully' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

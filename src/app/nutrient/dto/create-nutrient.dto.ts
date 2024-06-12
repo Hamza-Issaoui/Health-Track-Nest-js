@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsMongoId, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsMongoId } from 'class-validator';
 
 export class CreateNutrientDto {
   @IsNotEmpty()
@@ -21,7 +21,11 @@ export class CreateNutrientDto {
   @IsString()
   source?: string;
 
-  @IsMongoId()
+  @IsOptional()
+  @IsNumber()
+  calories?: number;
+
   @IsNotEmpty()
-  readonly mealId: string;
+  @IsMongoId()
+  mealId: string; 
 }

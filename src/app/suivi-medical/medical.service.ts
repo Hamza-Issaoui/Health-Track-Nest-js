@@ -5,26 +5,41 @@ import { Model } from 'mongoose';
 
 import { Medical } from './medical.entity';
 import { CreateMedicalDto } from './dto/create-medical.dto';
+import { Users } from '../users/user.entity';
 
 @Injectable()
 export class MedicalService {
   constructor(
-    @InjectModel(Medical.name) private medicalModel: Model<Medical>
+    @InjectModel(Medical.name) private medicalModel: Model<Medical>,
+    @InjectModel(Users.name) private userModel: Model<Users>,
+
   ) { }
 
   async create(createMedicalDto: CreateMedicalDto): Promise<Medical> {
-    try {
-      const { ...medicalData } = createMedicalDto;
-      const newMedical = new this.medicalModel(medicalData);
-      return await newMedical.save();
+      const {userId, ...medicalData } = createMedicalDto;
+      // Create new meal object
+  const newMedical = new this.medicalModel({
+   ...medicalData,
+    user: userId
+  });
+
+  try {
+    const medical = await newMedical.save();
+    await this.userModel.findByIdAndUpdate(userId, {
+      $push: { medicals: medical }
+    });
+
+    return medical;
+
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-
+  
+  
   async findByname(name: string): Promise<Medical> {
     try {
-      const medicalRecord = await this.medicalModel.findOne({ name }).exec();
+      const medicalRecord = await this.medicalModel.findOne({ user: name }).exec();
       if (!medicalRecord) {
         throw new HttpException("Medical-record not found", HttpStatus.BAD_REQUEST);
       }

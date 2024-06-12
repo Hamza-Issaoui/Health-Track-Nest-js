@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 enum ActivityGoal {
   Low = 'low',
@@ -60,6 +60,10 @@ export class Goals extends Document {
 
   @Prop({ required: false })
   exerciseMinutesPerSession?: number;
+
+    // many to one relation
+    @Prop({ type: Types.ObjectId, ref: 'Users', required: true })
+    user: Types.ObjectId;
 }
 
 export const GoalSchema = SchemaFactory.createForClass(Goals);

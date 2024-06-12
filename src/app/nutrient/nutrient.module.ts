@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { DatabaseModule } from '../shared/database/databse.module';
-import { NutrientSchema } from './nutrient.entity';
+import { NutrientSchema, Nutrients } from './nutrient.entity';
 import { NutrientssController } from './nutrient.controller';
 import { NutrientService } from './nutrient.service';
 import { MealModule } from '../meals/meal.module';
@@ -11,7 +11,7 @@ import { MealModule } from '../meals/meal.module';
   imports: [
     DatabaseModule,
     MealModule,
-    MongooseModule.forFeature([{ name: 'Nutrients', schema: NutrientSchema }]),
+    MongooseModule.forFeature([{ name: Nutrients.name, schema: NutrientSchema }]),
   ],
   controllers: [NutrientssController],
   providers: [NutrientService],

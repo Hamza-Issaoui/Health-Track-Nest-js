@@ -27,14 +27,17 @@ export class MealService {
     totalCalories,
     mealType,
     notes,
+    nutrients,
     user: userId
   });
 
   try {
-    const meal = await newMeal.save();
+    const meal = (await newMeal.save())
+    console.log("meals", meal);
+    
     await this.userModel.findByIdAndUpdate(userId, {
       $push: { meals: meal }
-    });
+    }).populate('nutrients');
 
     return meal;
   } catch (error) {
@@ -70,6 +73,7 @@ export class MealService {
   async findAll(): Promise<{ message: string, meals: Meals[] }> {
     try {
       const meals = await this.mealModel.find({})
+      .populate('user')
         .populate('nutrients')
         .exec();
       return { message: 'Meals retrieved successfully', meals };

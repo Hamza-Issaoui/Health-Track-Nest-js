@@ -34,20 +34,20 @@ export class CreateUserDto {
   @ValidateNested({ each: true })
   @Type(() => CreateActivityDto)
   @ArrayMinSize(1)
-  readonly activitiesId: CreateActivityDto[];
+  readonly activities: CreateActivityDto[];
 
   @ValidateNested({ each: true })
   @Type(() => CreateMealDto)
   @ArrayMinSize(1)
-  readonly mealsId: CreateMealDto[];
+  readonly meals: CreateMealDto[];
 
   @ValidateNested({ each: true })
   @Type(() => CreateGoalDto)
   @ArrayMinSize(1)
-  readonly goalsId: CreateGoalDto[];
+  readonly goals: CreateGoalDto[];
 
   @ValidateNested({ each: true })
   @Type(() => CreateMedicalDto)
   @ArrayMinSize(1)
-  readonly medicalsId: CreateMedicalDto[];
+  readonly medicals: CreateMedicalDto[];
 }

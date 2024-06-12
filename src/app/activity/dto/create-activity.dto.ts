@@ -1,12 +1,8 @@
-import { IsNotEmpty, IsString, IsDate, IsInt, Min, IsNumber, IsOptional, IsIn } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, IsInt, Min, IsNumber, IsOptional, IsIn, IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateActivityDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  activityId: string;
-
+  
   @ApiProperty({ enum: ['Running', 'Cycling', 'Swimming', 'Walking'] })
   @IsNotEmpty()
   @IsString()
@@ -45,4 +41,10 @@ export class CreateActivityDto {
   @IsString()
   @IsIn(['Low', 'Moderate', 'High'])
   intensity?: string;
+
+  // many to one relation
+  @IsMongoId()
+  @IsNotEmpty()
+  readonly userId: string;
+
 }

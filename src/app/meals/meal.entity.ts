@@ -24,7 +24,7 @@ export class Meals extends Document {
   notes: string;
 
   // many to one relation
-  @Prop({ type: Types.ObjectId, ref: 'Client', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: true })
   user: Types.ObjectId;
 
   // one to many relation
