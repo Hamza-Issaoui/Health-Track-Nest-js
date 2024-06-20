@@ -15,7 +15,7 @@ export class AppointmentService {
         @InjectModel(Medical.name) private medicalModel: Model<Medical>,
     ) { }
 
-    async create(createAppointDto: CreateAppointDto): Promise<Appointments> {
+    async create(createAppointDto: CreateAppointDto): Promise<any> {
         const { date, description, doctor, medicalId } = createAppointDto;
 
         const newAppoint = new this.appointModel({
@@ -28,7 +28,11 @@ export class AppointmentService {
         try {
             const appointment = await newAppoint.save();
             await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { appointments: appointment } });
-            return appointment;
+            return {
+                status: HttpStatus.CREATED,
+                msg: 'Medication Created Successfully!',
+                appointment: appointment,
+            };
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
@@ -75,6 +79,11 @@ export class AppointmentService {
             if (!updatedAppoint) {
                 throw new HttpException('Appointment not found', HttpStatus.BAD_REQUEST);
             }
+            await this.medicalModel.findByIdAndUpdate(updatedAppoint.medical, {
+                $set: { "appointments.$[elem]": updatedAppoint }
+            }, {
+                arrayFilters: [{ "elem._id": new Types.ObjectId(id) }]
+            });
             return updatedAppoint;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -88,7 +97,7 @@ export class AppointmentService {
                 throw new HttpException("Appointment not found", HttpStatus.BAD_REQUEST);
             }
             await this.medicalModel.findByIdAndUpdate(appoint.medical, {
-                $pull: { appointments: appoint._id },
+                $pull: { appointments: appoint },
             }).exec();
             const deleted = await this.appointModel.findByIdAndDelete(id).exec();
             if (!deleted) {

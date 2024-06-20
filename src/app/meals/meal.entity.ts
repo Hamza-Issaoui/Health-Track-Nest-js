@@ -17,7 +17,7 @@ export class Meals extends Document {
   @Prop({ required: true, default: 0 })
   totalCalories: number;
 
-  @Prop({ required: true, enum: ['breakfast', 'dinner', 'lunch', 'snack'] })
+  @Prop({ required: true, enum: ['Breakfast', 'Dinner', 'Lunch', 'Snack'] })
   mealType: string;
 
   @Prop()

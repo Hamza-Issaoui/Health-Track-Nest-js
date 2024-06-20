@@ -7,6 +7,7 @@ import { Medical } from '../suivi-medical/medical.entity';
 import { Activities } from '../activity/activity.entity';
 import { Meals } from '../meals/meal.entity';
 import { Goals } from '../goals/goals.entity';
+import { HealthPrograms } from '../healthProgram/healthProg.entity';
 
 @Schema({ timestamps: true })
 export class Users extends Document {
@@ -49,6 +50,9 @@ export class Users extends Document {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Medical' }] })
   medicals: Medical[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'HealthProgram' }] })
+  healthPrograms: HealthPrograms[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(Users);

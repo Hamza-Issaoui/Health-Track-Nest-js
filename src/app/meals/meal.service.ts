@@ -17,7 +17,7 @@ export class MealService {
     @InjectModel(Users.name) private userModel: Model<Users>,
   ) { }
 
- async create(createMealDto: CreateMealDto): Promise<Meals> {
+ async create(createMealDto: CreateMealDto): Promise<any> {
   const { name, date, totalCalories, mealType, notes, userId, nutrients } = createMealDto;
 
   // Create new meal object
@@ -37,18 +37,21 @@ export class MealService {
     
     await this.userModel.findByIdAndUpdate(userId, {
       $push: { meals: meal }
-    }).populate('nutrients');
+    })
 
-    return meal;
+    return {
+      status: HttpStatus.CREATED,
+      msg: 'Medication Created Successfully!',
+      meal: meal,
+  };
   } catch (error) {
     throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
   }
 }
 
-
-  async findByname(name: string): Promise<Meals> {
+  async findByUserId(id: string): Promise<Meals[]> {
     try {
-      const meal = await this.mealModel.findOne({ name }).exec();
+      const meal = await this.mealModel.find({ user: id }).populate('user').exec();
       if (!meal) {
         throw new HttpException("Meal not found", HttpStatus.BAD_REQUEST);
       }
@@ -70,11 +73,35 @@ export class MealService {
     }
   }
 
+  async findMealByUserAndDate(userId: string, date: Date): Promise<Meals[]> {
+    try {
+      // Convert the date to the start and end of the day
+      const startOfDay = new Date(date);
+      startOfDay.setUTCHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(date);
+      endOfDay.setUTCHours(23, 59, 59, 999);
+
+      // Fetch meals that match the userId and fall within the start and end of the given date
+      const meals = await this.mealModel.find({
+        user: userId,
+        date: { $gte: startOfDay, $lte: endOfDay }
+      }).populate('user').exec();
+
+      if (!meals || meals.length === 0) {
+        throw new HttpException('No meals found for the given date', HttpStatus.NOT_FOUND);
+      }
+
+      return meals;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async findAll(): Promise<{ message: string, meals: Meals[] }> {
     try {
       const meals = await this.mealModel.find({})
       .populate('user')
-        .populate('nutrients')
         .exec();
       return { message: 'Meals retrieved successfully', meals };
     } catch (error) {

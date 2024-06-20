@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { CreateMedicationDto } from './dto/medication.dto';
 import { Medications } from './medication.entity';
@@ -15,7 +15,7 @@ export class MedicationService {
         @InjectModel(Medical.name) private medicalModel: Model<Medical>,
     ) { }
 
-    async create(createMedicationDto: CreateMedicationDto): Promise<Medications> {
+    async create(createMedicationDto: CreateMedicationDto): Promise<any> {
         const { name, dosage, frequency, medicalId } = createMedicationDto;
 
         const newMedication = new this.medicationModel({
@@ -28,12 +28,15 @@ export class MedicationService {
         try {
             const medication = await newMedication.save();
             await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { medications: medication } });
-            return medication;
+            return {
+                status: HttpStatus.CREATED,
+                msg: 'Medication Created Successfully!',
+                medication: medication,
+            };
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
-
     async findById(id: string): Promise<Medications> {
         try {
             const medication = await this.medicationModel.findById(id).exec();
@@ -63,6 +66,11 @@ export class MedicationService {
             if (!updatedMedication) {
                 throw new HttpException("Medication not found", HttpStatus.BAD_REQUEST);
             }
+            await this.medicalModel.findByIdAndUpdate(updatedMedication.medical, {
+                $set: { "medications.$[elem]": updatedMedication }
+            }, {
+                arrayFilters: [{ "elem._id": new Types.ObjectId(id) }]
+            });
             return updatedMedication;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -76,7 +84,7 @@ export class MedicationService {
                 throw new HttpException("Medication not found", HttpStatus.BAD_REQUEST);
             }
             await this.medicalModel.findByIdAndUpdate(medical.medical, {
-                $pull: { medications: medical._id },
+                $pull: { medications: medical },
             }).exec();
             const deleted = await this.medicationModel.findByIdAndDelete(id).exec();
             if (!deleted) {

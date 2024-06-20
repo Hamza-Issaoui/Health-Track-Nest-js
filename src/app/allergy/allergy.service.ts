@@ -15,7 +15,7 @@ export class AllergyService {
         @InjectModel(Medical.name) private medicalModel: Model<Medical>,
     ) { }
 
-    async create(createAllergyDto: CreateAllergyDto): Promise<Allergy> {
+    async create(createAllergyDto: CreateAllergyDto): Promise<any> {
         const { name, severity, medicalId } = createAllergyDto;
 
         const newAllergy = new this.allergyModel({
@@ -27,7 +27,11 @@ export class AllergyService {
         try {
             const allergy = await newAllergy.save();
             await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { allergies: allergy } });
-            return allergy;
+            return {
+                status: HttpStatus.CREATED,
+                msg: 'Medication Created Successfully!',
+                allergy: allergy,
+            };
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
@@ -62,6 +66,14 @@ export class AllergyService {
             if (!updatedAllergy) {
                 throw new HttpException("Allergy not found", HttpStatus.BAD_REQUEST);
             }
+
+            // Find the related medical document and update its allergies array
+            await this.medicalModel.findByIdAndUpdate(updatedAllergy.medical, {
+                $set: { "allergies.$[elem]": updatedAllergy }
+            }, {
+                arrayFilters: [{ "elem._id": new Types.ObjectId(id) }]
+            });
+
             return updatedAllergy;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -76,7 +88,7 @@ export class AllergyService {
             }
 
             await this.medicalModel.findByIdAndUpdate(allergy.medical, {
-                $pull: { allergies: allergy._id },
+                $pull: { allergies: allergy },
             }).exec();
             const deleted = await this.allergyModel.findByIdAndDelete(id).exec();
             if (!deleted) {

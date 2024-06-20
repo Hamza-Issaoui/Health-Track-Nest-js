@@ -19,7 +19,7 @@ export class CreateMealDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(['breakfast', 'dinner', 'lunch', 'snack'])
+  @IsIn(['Breakfast', 'Dinner', 'Lunch', 'Snack'])
   mealType: string;
 
   @IsString()

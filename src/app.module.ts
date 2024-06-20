@@ -15,6 +15,7 @@ import { SymptomModule } from './app/symptom/symptom.module';
 import { MedicationModule } from './app/medication/medication.module';
 import { AppointmentModule } from './app/appointment/appointment.module';
 import { UploadFileService } from './app/shared/upload-file/upload-file.service';
+import { HealthProgramModule } from './app/healthProgram/healthProg.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { UploadFileService } from './app/shared/upload-file/upload-file.service'
     AllergyModule,
     SymptomModule,
     MedicationModule,
-    AppointmentModule
+    AppointmentModule,
+    HealthProgramModule
   ],
   controllers: [AppController],
   providers: [AppService, UploadFileService],

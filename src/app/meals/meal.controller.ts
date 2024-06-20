@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, HttpException, HttpStatus } from '@nestjs/common';
 
 import { MealService } from './meal.service';
 import { CreateMealDto } from './dto/create-meal.dto';
@@ -18,9 +18,21 @@ export class MealsController {
     return this.mealService.findById(id);
   }
 
-  @Get(':name')
-  async findMealByName(@Param('name') name: string): Promise<Meals> {
-    return this.mealService.findByname(name);
+  @Get('user/:id')
+  async findMealByUserId(@Param('id') id: string): Promise<Meals[]> {
+    return this.mealService.findByUserId(id);
+  }
+
+  @Get('user/:userId/date/:date')
+  async findMealByDate(
+    @Param('userId') userId: string,
+    @Param('date') date: string
+  ): Promise<Meals[]> {
+    const parsedDate = new Date(date);
+    if (isNaN(parsedDate.getTime())) {
+      throw new HttpException('Invalid date format', HttpStatus.BAD_REQUEST);
+    }
+    return this.mealService.findMealByUserAndDate(userId, parsedDate);
   }
 
   @Get()

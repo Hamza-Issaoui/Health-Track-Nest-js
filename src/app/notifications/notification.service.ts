@@ -18,7 +18,6 @@ export class NotificationService {
     try {
       const newNotif = new this.notifModel(createNotifDto);
       const savedNotif = await newNotif.save();
-      console.log("savedNotif", savedNotif);
 
       // this.webSocket.emitter('test', 'test2')
 

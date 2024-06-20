@@ -95,6 +95,8 @@ export class GoalService {
 
   async delete(id: string): Promise<{ message: string }> {
     try {
+      const goal = await this.goalModel.findById(id).exec();
+
       const deletedGoal = await this.goalModel.findByIdAndDelete(id).exec();
       if (!deletedGoal) {
         throw new HttpException("Goal not found", HttpStatus.BAD_REQUEST);
@@ -102,7 +104,7 @@ export class GoalService {
 
       // Remove the goal reference from the user's goals array
       await this.userModel.findByIdAndUpdate(deletedGoal.user, {
-        $pull: { goals: id }
+        $pull: { goals: goal }
       });
 
       return { message: 'Goal deleted successfully' };

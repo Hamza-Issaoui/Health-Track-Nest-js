@@ -16,7 +16,7 @@ export class SymptomService {
 
     ) { }
 
-    async create(createSymptomDto: CreateSymptomDto): Promise<Symptom> {
+    async create(createSymptomDto: CreateSymptomDto): Promise<any> {
         const { name, description, date, medicalId } = createSymptomDto;
 
         const newSymptom = new this.symptomModel({
@@ -29,7 +29,11 @@ export class SymptomService {
         try {
             const symptom = await newSymptom.save();
             await this.medicalModel.findByIdAndUpdate(medicalId, { $push: { symptoms: symptom } });
-            return symptom;
+            return {
+                status: HttpStatus.CREATED,
+                msg: 'Medication Created Successfully!',
+                symptom: symptom,
+            };
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
@@ -64,6 +68,11 @@ export class SymptomService {
             if (!update) {
                 throw new HttpException("Symptom not found", HttpStatus.BAD_REQUEST);
             }
+            await this.medicalModel.findByIdAndUpdate(update.medical, {
+                $set: { "symptoms.$[elem]": update }
+            }, {
+                arrayFilters: [{ "elem._id": new Types.ObjectId(id) }]
+            });
             return update;
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -77,7 +86,7 @@ export class SymptomService {
                 throw new HttpException("Symptom not found", HttpStatus.BAD_REQUEST);
             }
             await this.medicalModel.findByIdAndUpdate(symptom.medical, {
-                $pull: { symptoms: symptom._id },
+                $pull: { symptoms: symptom },
             }).exec();
             const deleted = await this.symptomModel.findByIdAndDelete(id).exec();
             if (!deleted) {

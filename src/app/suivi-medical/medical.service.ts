@@ -37,9 +37,9 @@ export class MedicalService {
   }
   
   
-  async findByname(name: string): Promise<Medical> {
+  async findByUserId(id: string): Promise<Medical> {
     try {
-      const medicalRecord = await this.medicalModel.findOne({ user: name }).exec();
+      const medicalRecord = await this.medicalModel.findOne({ user: id }).populate('user').exec();
       if (!medicalRecord) {
         throw new HttpException("Medical-record not found", HttpStatus.BAD_REQUEST);
       }
@@ -69,6 +69,7 @@ export class MedicalService {
         .populate('allergies')
         .populate('symptoms')
         .populate('appointments')
+        .populate('user')
         .exec();
 
       return { message: 'Medical records retrieved successfully', medical: medicalRecords };

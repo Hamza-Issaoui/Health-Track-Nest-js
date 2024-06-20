@@ -17,7 +17,7 @@ export class NutrientService {
 
   ) { }
 
-  async create(createNutrientDto: CreateNutrientDto): Promise<Nutrients> {
+  async create(createNutrientDto: CreateNutrientDto): Promise<any> {
     const { name, quantity, unit, type, source, mealId } = createNutrientDto;
 
     const calories = NutrientCalculator.calculateCalories(quantity, type);
@@ -38,15 +38,19 @@ export class NutrientService {
         $push: { nutrients: nutrient },
         $inc: { totalCalories: calories }
       });
-      return nutrient;
+      return {
+        status: HttpStatus.CREATED,
+        msg: 'Medication Created Successfully!',
+        nutrient: nutrient,
+      }
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async findByname(name: string): Promise<Nutrients> {
+  async findByMealId(id: string): Promise<Nutrients[]> {
     try {
-      const nutrient = await this.nutrientModel.findOne({ name }).exec();
+      const nutrient = await this.nutrientModel.find({ meal: id }).exec();
       if (!nutrient) {
         throw new HttpException("Nutrient not found", HttpStatus.BAD_REQUEST);
       }
@@ -125,20 +129,29 @@ export class NutrientService {
       if (!nutrient) {
         throw new HttpException("Nutrient not found", HttpStatus.BAD_REQUEST);
       }
-      await this.mealModel.findByIdAndUpdate(nutrient.meal, {
-        $pull: { nutrients: nutrient._id },
-        $inc: { totalCalories: -nutrient.calories }
-      }).exec();
-
+  
+      const mealUpdate = await this.mealModel.findByIdAndUpdate(
+        nutrient.meal,
+        {
+          $pull: { nutrients: nutrient },
+          $inc: { totalCalories: -nutrient.calories }
+        },
+        { new: true }  // Return the updated document
+      ).exec();
+  
+      if (!mealUpdate) {
+        throw new HttpException("Meal not found", HttpStatus.BAD_REQUEST);
+      }
+  
       const deleted = await this.nutrientModel.findByIdAndDelete(id).exec();
       if (!deleted) {
         throw new HttpException("Nutrient not found", HttpStatus.BAD_REQUEST);
       }
-      
+  
       return { message: 'Nutrient deleted successfully' };
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-
+  
 }

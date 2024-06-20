@@ -13,7 +13,7 @@ export class ActivityService {
   constructor(
     @InjectModel(Activities.name) private activityModel: Model<Activities>,
     @InjectModel(Users.name) private userModel: Model<Users>
-  ) {}
+  ) { }
 
   async create(createActivityDto: CreateActivityDto): Promise<Activities> {
     const { userId, type, date, duration, caloriesBurned, location, notes, intensity } = createActivityDto;
@@ -83,22 +83,22 @@ export class ActivityService {
 
   async delete(id: string): Promise<{ message: string }> {
     try {
-        // Supprimer l'activité
-        const deletedActivity = await this.activityModel.findByIdAndDelete(id).exec();
-        if (!deletedActivity) {
-            throw new HttpException("Activity not found", HttpStatus.BAD_REQUEST);
-        }
+      const activity = await this.activityModel.findById(id).exec();
+      const deletedActivity = await this.activityModel.findByIdAndDelete(id).exec();
+      if (!deletedActivity) {
+        throw new HttpException("Activity not found", HttpStatus.BAD_REQUEST);
+      }
 
-        // Retirer la référence à l'activité de l'utilisateur correspondant
-        await this.userModel.findByIdAndUpdate(deletedActivity.user, {
-            $pull: { activities: id }
-        });
+      // Retirer la référence à l'activité de l'utilisateur correspondant
+      await this.userModel.findByIdAndUpdate(deletedActivity.user, {
+        $pull: { activities: activity }
+      });
 
-        return { message: 'Activity deleted successfully' };
+      return { message: 'Activity deleted successfully' };
     } catch (error) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-}
+  }
 
 
 }

@@ -19,9 +19,9 @@ export class MedicalController {
   }
 
   /* a faire */
-  @Get('user/:name')
-  async findMedicalByName(@Param('name') name: string): Promise<Medical> {
-    return this.medicalervice.findByname(name);
+  @Get('user/:id')
+  async findMedicalByName(@Param('id') id: string): Promise<Medical> {
+    return this.medicalervice.findByUserId(id);
   }
 
   @Get()

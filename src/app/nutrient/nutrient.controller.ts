@@ -18,9 +18,9 @@ export class NutrientssController {
     return this.nutrientService.findById(id);
   }
 
-  @Get(':name')
-  async findNutrientByName(@Param('name') name: string): Promise<Nutrients> {
-    return this.nutrientService.findByname(name);
+  @Get('meal/:id')
+  async findNutrientByMeal(@Param('id') id: string): Promise<Nutrients[]> {
+    return this.nutrientService.findByMealId(id);
   }
 
   @Get()
