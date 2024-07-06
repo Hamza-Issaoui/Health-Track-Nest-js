@@ -41,7 +41,7 @@ export class MealService {
 
     return {
       status: HttpStatus.CREATED,
-      msg: 'Medication Created Successfully!',
+      msg: 'Meal Created Successfully!',
       meal: meal,
   };
   } catch (error) {

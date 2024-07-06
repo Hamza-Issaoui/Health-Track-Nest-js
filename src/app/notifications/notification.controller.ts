@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, Put } from '@nestjs/common';
 
 import { CreateNotificationDto } from './dto/create-notif.dto';
 import { Notifications } from './notification.entity';
@@ -24,20 +24,25 @@ export class NotificationController {
   }
 
   @Get()
-  async findAllNotifications(): Promise<{ message: string, notifs: Notifications[] }> {
+  async findAllNotifications(): Promise<Notifications[]> {
     return await this.notificationService.findAllNotifs();
   }
 
-  @Patch(':id')
+  @Patch()
   async updateNotif(
-    @Param('id') id: string,
-    @Body() updateNotifDto: CreateNotificationDto,
+    @Body() body,
   ): Promise<Notifications> {
-    return this.notificationService.updateNotif(id, updateNotifDto);
+    return this.notificationService.updateNotif(body.id, body.notification);
   }
 
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.notificationService.deleteNotif(id);
   }
+
+  @Put('mark-all-as-read')
+  updateAllNotification() {
+    return this.notificationService.markAllAsRead();
+  }
+
 }

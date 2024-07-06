@@ -40,7 +40,7 @@ export class NutrientService {
       });
       return {
         status: HttpStatus.CREATED,
-        msg: 'Medication Created Successfully!',
+        msg: 'Nutrient Created Successfully!',
         nutrient: nutrient,
       }
     } catch (error) {

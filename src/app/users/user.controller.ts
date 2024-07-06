@@ -24,7 +24,7 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Post()
-  @UseInterceptors(FileInterceptor('profilePicture', {
+  @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
       destination: './uploads',
       filename: (req, file, cb) => {

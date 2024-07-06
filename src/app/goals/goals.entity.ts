@@ -2,21 +2,21 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
 enum ActivityGoal {
-  Low = 'low',
-  Medium = 'medium',
-  High = 'high'
+  Low = 'Low',
+  Medium = 'Medium',
+  High = 'High'
 }
 
 enum NutritionGoal {
-  Balanced = 'balanced',
-  Keto = 'keto',
-  Vegan = 'vegan'
+  Balanced = 'Balanced',
+  Keto = 'Keto',
+  Vegan = 'Vegan'
 }
 
 enum GoalType {
-  WeightLoss = 'weight loss',
-  WeightGain = 'weight gain',
-  Maintenance = 'maintenance'
+  WeightLoss = 'Weight Loss',
+  WeightGain = 'Weight Gain',
+  MusculGain = 'Muscul Gain'
 }
 
 @Schema({ timestamps: true })
@@ -49,7 +49,7 @@ export class Goals extends Document {
   @Prop({ required: false })
   sex?: string;
 
-  @Prop({ required: false, enum: ActivityGoal })
+  @Prop({ required: false })
   activityLevel?: string;
 
   @Prop({ required: false, enum: GoalType })

@@ -14,9 +14,9 @@ export class UploadFileService {
 
       const fileExtension = file.originalname.split('.').pop().toLowerCase();
       if (allowedImageTypes.includes(fileExtension)) {
-        destinationDirectory = './uploads/images';
+        destinationDirectory = './src/assets/uploads/images';
       } else if (allowedDocumentTypes.includes(fileExtension)) {
-        destinationDirectory = './uploads/files';
+        destinationDirectory = './src/assets/uploads/files';
       } else {
         throw new Error('Unsupported file type');
       }
@@ -31,7 +31,7 @@ export class UploadFileService {
       const filePath = path.join(destinationDirectory, fileName);
       fs.writeFileSync(filePath, file.buffer);
 
-      return filePath;
+      return fileName;
     } catch (error) {
       console.error('Failed to upload file:', error.message);
       throw new Error('Failed to upload file');

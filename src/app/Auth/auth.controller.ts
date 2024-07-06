@@ -6,7 +6,6 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ForgotPasswordDto } from './dto/ForgotPassword.dto';
 import { ResetPasswordDto } from './dto/ResetPassword.dto';
 import { VerifyEmailDto } from './dto/VerifyEmail.dto';
-import { LocalAuthGuard } from './local-auth.guard';
 
 
 @Controller('auth')

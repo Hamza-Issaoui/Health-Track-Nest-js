@@ -19,10 +19,10 @@ export class NotificationService {
       const newNotif = new this.notifModel(createNotifDto);
       const savedNotif = await newNotif.save();
 
-      // this.webSocket.emitter('test', 'test2')
+      const notifications = await this.notifModel.find().exec();
 
       // Emit notification event to WebSocket clients
-      this.webSocket.sendNotification(savedNotif);
+      this.webSocket.sendNotification(notifications);
       console.log("Notification sent to WebSocket clients");
 
       return {
@@ -59,10 +59,9 @@ export class NotificationService {
     }
   }
 
-  async findAllNotifs(): Promise<{ message: string, notifs: Notifications[] }> {
+  async findAllNotifs(): Promise<Notifications[]> {
     try {
-      const notifs = await this.notifModel.find().exec();
-      return { message: 'Notifications retrieved successfully', notifs };
+      return await this.notifModel.find().exec();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
@@ -91,5 +90,22 @@ export class NotificationService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  /**
+   * Mark all as read
+   * @returns 
+   */
+  async markAllAsRead(): Promise<any> {
+    const notifications = await this.notifModel.find().exec();
+  
+    for (const notif of notifications) {
+      notif.read = true;
+      await notif.save();
+    }
+    
+    return notifications;
+  }
+  
+  
 
 }
