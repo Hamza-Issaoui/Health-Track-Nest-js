@@ -8,6 +8,7 @@ import { Activities } from '../activity/activity.entity';
 import { Meals } from '../meals/meal.entity';
 import { Goals } from '../goals/goals.entity';
 import { HealthPrograms } from '../healthProgram/healthProg.entity';
+import { Chat } from '../chat/chat.entity';
 
 @Schema({ timestamps: true })
 export class Users extends Document {
@@ -53,6 +54,9 @@ export class Users extends Document {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'HealthProgram' }] })
   healthPrograms: HealthPrograms[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Chat' }] })
+  chats: Chat[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(Users);

@@ -23,6 +23,9 @@ enum GoalType {
 export class Goals extends Document {
 
   @Prop({ required: true })
+  name: string;
+
+  @Prop({ required: true })
   weightGoal: number;
 
   @Prop({ required: true, enum: ActivityGoal })
@@ -55,11 +58,11 @@ export class Goals extends Document {
   @Prop({ required: false, enum: GoalType })
   goalType?: string;
 
-  @Prop({ required: false })
+  /* @Prop({ required: false })
   exerciseDaysPerWeek?: number;
 
   @Prop({ required: false })
-  exerciseMinutesPerSession?: number;
+  exerciseMinutesPerSession?: number; */
 
     // many to one relation
     @Prop({ type: Types.ObjectId, ref: 'Users', required: true })

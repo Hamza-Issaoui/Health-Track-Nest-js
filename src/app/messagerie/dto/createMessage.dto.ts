@@ -3,9 +3,20 @@ import { IsBoolean, IsMongoId, IsNotEmpty, IsString, MinLength } from 'class-val
 export class CreateMessageDto {
 
     @IsString()
-    readonly message: string;
+    readonly value: string;
 
     @IsBoolean()
-    readonly read: boolean;
+    readonly seen: boolean;
 
+    @IsNotEmpty()
+    @IsMongoId()
+    chatId: string;
+
+    @IsNotEmpty()
+    @IsMongoId()
+    contactId: string;
+
+    @IsNotEmpty()
+    @IsMongoId()
+    isMine: string;
 }

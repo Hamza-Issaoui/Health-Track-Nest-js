@@ -76,10 +76,10 @@ export class UserService {
     }
   }
 
-  async findAllUsers(): Promise<{ message: string, users: Users[] }> {
+  async findAllUsers(): Promise<Users[]> {
     try {
-      const users = await this.userModel.find().populate('meals').exec();
-      return { message: 'Users retrieved successfully', users };
+      const users = await this.userModel.find().populate('meals').populate('chats').exec();
+      return users ;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }

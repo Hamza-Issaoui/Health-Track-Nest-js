@@ -10,6 +10,8 @@ export class MessageController {
 
   @Post()
   async createMessage(@Body() createMessageDto: CreateMessageDto): Promise<Messages> {
+    console.log(createMessageDto, ' create message ');
+    
     return this.messageService.createMessage(createMessageDto);
   }
 

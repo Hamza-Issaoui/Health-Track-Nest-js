@@ -2,6 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Min, Max, IsMongoId } from 'class-validator';
 
 export class CreateGoalDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -57,7 +61,7 @@ export class CreateGoalDto {
   @IsString()
   goalType?: string;
 
-  @ApiProperty({ required: false })
+  /* @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
   @Min(1)
@@ -69,7 +73,7 @@ export class CreateGoalDto {
   @IsNumber()
   @Min(10)
   @Max(180)
-  exerciseMinutesPerSession?: number;
+  exerciseMinutesPerSession?: number; */
 
   // many to one relation
   @IsMongoId()

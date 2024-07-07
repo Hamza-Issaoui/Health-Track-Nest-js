@@ -55,7 +55,7 @@ export class UserController {
 
   // @UseGuards(LocalAuthGuard)
   @Get()
-  async findAllUsers(): Promise<{ message: string, users: Users[] }> {
+  async findAllUsers(): Promise<Users[]> {
     return await this.userService.findAllUsers();
   }
 

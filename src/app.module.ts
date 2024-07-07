@@ -17,6 +17,7 @@ import { AppointmentModule } from './app/appointment/appointment.module';
 import { UploadFileService } from './app/shared/upload-file/upload-file.service';
 import { HealthProgramModule } from './app/healthProgram/healthProg.module';
 import { MessagerieModule } from './app/messagerie/messagerie.module';
+import { ChatModule } from './app/chat/chat.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { MessagerieModule } from './app/messagerie/messagerie.module';
     MedicationModule,
     AppointmentModule,
     HealthProgramModule,
-    MessagerieModule
+    MessagerieModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService, UploadFileService],

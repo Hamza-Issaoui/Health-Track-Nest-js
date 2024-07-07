@@ -17,10 +17,11 @@ export class GoalService {
   @InjectModel(Users.name) private userModel: Model<Users>
 
   async create(createGoalDto: CreateGoalDto): Promise<any> {
-    const { weightGoal, activityGoal, nutritionGoal, startDate, endDate, currentWeight, height, age, sex, activityLevel, goalType, exerciseDaysPerWeek, exerciseMinutesPerSession, userId } = createGoalDto;
+    const {name, weightGoal, activityGoal, nutritionGoal, startDate, endDate, currentWeight, height, age, sex, activityLevel, goalType, userId } = createGoalDto;
 
     // Create new goal object
     const newGoal = new this.goalModel({
+      name,
       weightGoal,
       activityGoal,
       nutritionGoal,
@@ -32,8 +33,6 @@ export class GoalService {
       sex,
       activityLevel,
       goalType,
-      exerciseDaysPerWeek,
-      exerciseMinutesPerSession,
       user: userId // Linking goal to the user
     });
 
