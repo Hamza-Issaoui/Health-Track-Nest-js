@@ -4,10 +4,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 
-import { WebSocket } from '../shared/webSocket/webSocketGateway';
+import { WebSocket } from '../shared/webSocket/notification-websocket';
 import { Messages } from './messagerie.entity';
 import { CreateMessageDto } from './dto/createMessage.dto';
 import { Chat } from '../chat/chat.entity';
+import { MessagerieGateway } from '../shared/webSocket/messegerie-websocket';
+import { ChatModule } from '../chat/chat.module';
 
 @Injectable()
 export class MessageService {
@@ -15,6 +17,7 @@ export class MessageService {
         @InjectModel(Messages.name) private messageModel: Model<Messages>,
         @InjectModel(Chat.name) private chatModel: Model<Chat>,
         private readonly webSocket: WebSocket,
+        private _messagerieGateway: MessagerieGateway
     ) { }
 
     async createMessage(createMessageDto: CreateMessageDto): Promise<any> {
@@ -34,7 +37,11 @@ export class MessageService {
             const messages = await this.messageModel.find().exec();
 
             // Emit message event to WebSocket clients
-           // this.webSocket.sendNotification(messages);
+            this._messagerieGateway.sendMessage(
+                await this.chatModel.findById({_id: savedMessage.chatId}),
+              );
+              this._messagerieGateway.sendMessageById(await this.findAll(contactId));
+          
             console.log("Message sent to WebSocket clients");
 
             return {
@@ -46,6 +53,23 @@ export class MessageService {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    async findAll(id): Promise<Messages[]> {
+        const chats = await this.chatModel.find({ contactId: id })
+          .populate({
+            path: 'messages',
+          })
+          .exec();
+      console.log(chats, ' chats aze aze ');
+      
+        const messages = chats.flatMap((chat) => chat.messages);
+      
+        const returnedMsg = messages.filter((message) => !message.seen);
+        console.log( returnedMsg, ' gsgzg');
+        return returnedMsg;
+      }
+
 
     async findByMessageName(name: string): Promise<Messages> {
         try {

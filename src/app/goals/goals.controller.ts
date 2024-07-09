@@ -20,9 +20,14 @@ export class GoalsController {
     return this.goalService.findById(id);
   }
 
-  @Get(':name')
-  async findGoalByName(@Param('name') name: string): Promise<Goals> {
-    return this.goalService.findByname(name);
+  @Get('user/:id')
+  async findGoalByUser(@Param('id') id: string): Promise<Goals> {
+    return this.goalService.findByUser(id);
+  }
+
+  @Get('users/:id')
+  async findAllGoalByUser(@Param('id') id: string): Promise<Goals[]> {
+    return this.goalService.findAllByUser(id);
   }
 
   @Get()

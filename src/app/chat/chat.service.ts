@@ -10,12 +10,14 @@ import { Users } from '../users/user.entity';
 import { Nutrients } from '../nutrient/nutrient.entity';
 import { Chat } from './chat.entity';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { MessagerieGateway } from '../shared/webSocket/messegerie-websocket';
 
 @Injectable()
 export class ChatService {
     constructor(
         @InjectModel(Chat.name) private chatModel: Model<Chat>,
         @InjectModel(Users.name) private userModel: Model<Users>,
+        private _messagerieGateway: MessagerieGateway,
     ) { }
 
     async create(createChatDto: CreateChatDto): Promise<any> {
@@ -33,40 +35,48 @@ export class ChatService {
         });
 
         try {
-            const chat = (await newChat.save())
+            const chat = await newChat.save()
             console.log("chats", chat);
 
             await this.userModel.findByIdAndUpdate(contactId, {
                 $push: { chats: chat }
             })
-            console.log("nouveau chat",chat);
+
+            this._messagerieGateway.updateChats(
+                await this.findByUserId(chat.contactId),
+              );
+
+              
+            console.log("nouveau chat", chat);
             return {
                 status: HttpStatus.CREATED,
                 msg: 'Chat Created Successfully!',
-                chat: chat,                
+                chat: chat,
             };
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
 
-    async findByUserId(id: string): Promise<Chat[]> {
+    async findByUserId(id): Promise<Chat[]> {
         const chats = await this.chatModel.find({
             $or: [
-              { contactId: id },
+                { contactId: id },
+                { idReceiver: id }
             ]
-          })
-          .populate('messages')
-          .populate('contactId')
-          .exec();
-        
-          return chats;
-        } 
+        })
+            .populate('messages')
+            .populate('contactId')
+            .populate('idReceiver')
+            .exec();
+        return chats;
+    }
+
 
     async findById(id: string): Promise<Chat> {
         try {
             const chat = await this.chatModel.findById(id).populate('contactId')
-            .exec();
+                .exec();
             if (!chat) {
                 throw new HttpException("Chat not found", HttpStatus.BAD_REQUEST);
             }
@@ -106,6 +116,7 @@ export class ChatService {
             const chats = await this.chatModel.find({})
                 .populate('contactId')
                 .populate('messages')
+                .populate('idReceiver')
                 .exec();
             return { message: 'Chats retrieved successfully', chats };
         } catch (error) {

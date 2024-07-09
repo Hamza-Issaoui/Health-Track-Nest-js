@@ -16,27 +16,28 @@ export class MedicalService {
   ) { }
 
   async create(createMedicalDto: CreateMedicalDto): Promise<Medical> {
-      const {userId, ...medicalData } = createMedicalDto;
-      // Create new meal object
-  const newMedical = new this.medicalModel({
-   ...medicalData,
-    user: userId
-  });
-
-  try {
-    const medical = await newMedical.save();
-    await this.userModel.findByIdAndUpdate(userId, {
-      $push: { medicals: medical }
+    const { name, description, userId } = createMedicalDto;
+    // Create new meal object
+    const newMedical = new this.medicalModel({
+      name,
+      description,
+      user: userId
     });
 
-    return medical;
+    try {
+      const medical = await newMedical.save();
+      await this.userModel.findByIdAndUpdate(userId, {
+        $push: { medicals: medical }
+      });
+
+      return medical;
 
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  
-  
+
+
   async findByUserId(id: string): Promise<Medical> {
     try {
       const medicalRecord = await this.medicalModel.findOne({ user: id }).populate('user').exec();

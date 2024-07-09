@@ -13,10 +13,10 @@ export class CreateMedicalDto {
   @MinLength(6)
   readonly description: string;
 
-// relation many to one
-@IsMongoId()
-@IsNotEmpty()
-readonly userId: string;
+  // relation many to one
+  @IsMongoId()
+  @IsNotEmpty()
+  readonly userId: string;
 
   // relation one to many
   @ValidateNested({ each: true })

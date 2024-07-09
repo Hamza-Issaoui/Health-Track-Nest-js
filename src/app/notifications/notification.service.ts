@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 
 import { Notifications } from './notification.entity';
 import { CreateNotificationDto } from './dto/create-notif.dto';
-import { WebSocket } from '../shared/webSocket/webSocketGateway';
+import { WebSocket } from '../shared/webSocket/notification-websocket';
 
 @Injectable()
 export class NotificationService {

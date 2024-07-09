@@ -18,8 +18,8 @@ export class Medical extends Document {
   description: string;
 
   // one to one relation
-  @Prop({ type: Types.ObjectId, ref: 'Users', unique: true, required: true })
-  user: Users;
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: true })
+  user: Types.ObjectId;
 
   // relation one to many
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Medication' }] })

@@ -51,9 +51,9 @@ export class GoalService {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  async findByname(name: string): Promise<Goals> {
+  async findByUser(id: string): Promise<Goals> {
     try {
-      const goal = await this.goalModel.findOne({ name }).exec();
+      const goal = await this.goalModel.findOne({ id }).exec();
       if (!goal) {
         throw new HttpException("Goal not found", HttpStatus.BAD_REQUEST);
       }
@@ -79,6 +79,18 @@ export class GoalService {
     try {
       const goals = await this.goalModel.find().populate('user').exec();
       return { message: 'Goals retrieved successfully', goals };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findAllByUser(id: string): Promise<Goals[]> {
+    try {
+      const goals = await this.goalModel.find({ user: id }).populate('user').exec();
+      if (!goals || goals.length === 0) {
+        throw new HttpException("Goals not found for this user", HttpStatus.BAD_REQUEST);
+      }
+      return goals;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
